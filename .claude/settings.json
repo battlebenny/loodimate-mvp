@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/Users/bgermain/Library/CloudStorage/SynologyDrive-battle_benny/Obsidian/battle_benny/Projets/Loodi-mate/Formation Jedha",
+      "/Users/bgermain/Library/CloudStorage/SynologyDrive-battle_benny/Obsidian/battle_benny/Projets/Loodi-collec",
+      "/Users/bgermain/Library/CloudStorage/SynologyDrive-battle_benny/Obsidian/battle_benny/Projets/Loodi-friends",
+      "/Users/bgermain/Library/CloudStorage/SynologyDrive-battle_benny/Obsidian/battle_benny/Projets/Loodi-one",
+      "/Users/bgermain/Library/CloudStorage/SynologyDrive-battle_benny/Obsidian/battle_benny/Projets/Loodi-collec",
+      "/Users/bgermain/Sites/github/Loodi-apps"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}
