@@ -25,7 +25,7 @@ Une PWA mobile que 8 à 12 testeurs installent depuis un lien, pour enregistrer 
 - Identité visuelle Loodi (tokens `@loodi/ui`, accent Mate).
 
 **Non-objectifs**
-- Comptes, connexion, intégration au shell Loodi One (MiniHeader, BottomNav, bridge, auth), version native mobile.
+- Comptes, connexion, intégration au shell Loodi One (bridge, auth, launcher, composants partagés `@loodi/ui`), version native mobile. Le MiniHeader et la BottomNav sont **recréés localement** (voir §4), pas importés.
 - Mode hors ligne complet (le service worker ne sert qu'à l'installation et au cache des assets).
 - Jeux coopératifs, score le plus bas gagnant, gestion des ressources (parking lot).
 
@@ -52,7 +52,12 @@ Inconnue à lever en tout début de dev (spike court) : la façon dont l'Edge Fu
 
 ## 4. Design
 
-- Consommer `@loodi/ui` depuis le registre npm public (vérifié : collec le résout depuis registry.npmjs.org, aucun token requis) **en lecture seule**, uniquement pour `tokens.css` (couleurs, rayons, espacements, typographies, clair/sombre). Aucun composant de shell One.
+- Consommer `@loodi/ui` depuis le registre npm public (vérifié : collec le résout depuis registry.npmjs.org, aucun token requis) **en lecture seule**, uniquement pour `tokens.css` (couleurs, rayons, espacements, typographies, clair/sombre) et les logos via `@loodi/assets`. Aucun composant de shell One importé.
+- **Continuité avec l'écosystème (décidé le 08/11)** : le projet a ses **propres versions** du MiniHeader et de la BottomNav, qui reprennent l'apparence et le comportement de ceux de Loodi One (`loodi-one/packages/@loodi/ui/src/MiniHeader.tsx`, `BottomNav.tsx` et leurs CSS, lus comme référence, jamais modifiés). C'est une version simplifiée : sans bridge, sans launcher d'applications, sans compte ni paramètres.
+  - MiniHeader : logo et wordmark Loodi, tuile "Mate", bouton retour sur les écrans secondaires, verre qui apparaît au défilement.
+  - BottomNav : **Parties · Nouvelle partie · Stats**, sans bouton lanceur "Loodi" (décidé le 08/11). L'Accueil (onglet Parties) ne fait que lister les parties en cours et terminées, comme dans le wireframe. Le bouton "Nouvelle partie" et l'icône stats de l'en-tête de l'Accueil disparaissent : tout passe par la BottomNav. Elle est masquée sur Nouvelle partie et sur la Feuille de score pour garder la saisie sous la minute *(mon choix)*.
+  - Vue invité (P6) : MiniHeader sans menu, pas de BottomNav, CTA "Essayer Loodi-mate" *(mon choix)*.
+  - Les wireframes ne montrent ni l'un ni l'autre : ils fixent le contenu des écrans, le cadre vient de l'écosystème.
 - Polices : Playfair Display (titres), DM Sans (texte), JetBrains Mono (données chiffrées si utile), via `@fontsource` comme collec.
 - Accent du module : `--color-module-mate` (#2E8B57, vert forêt), réservé à l'action principale et aux états actifs (règle "accent rare" de collec et friends).
 - Règles reprises de collec et friends : surfaces opaques (pas de flou), une action principale par écran, cibles tactiles ≥ 44 px, contraste AA, clair/sombre suivant le système, `prefers-reduced-motion`.
