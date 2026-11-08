@@ -108,7 +108,15 @@ Limite Airtable : 5 requêtes/s par base, 10 enregistrements par requête d'écr
 - Ref de partie (`azul-2026-11-04`) et de participation (`azul-2026-11-04 · Benny`).
 
 **Choix du builder (à relire)**
-- Stats P5 : toutes les participations du joueur de l'appareil, y compris les parties enregistrées par un autre appareil (joueur confirmé via "ce joueur ?"). Les doublons éventuels ne sont pas dédupliqués dans l'app (cohérent avec la décision du 07/11 : détection à l'analyse). Même périmètre pour la règle "record personnel".
+- Stats P5 : toutes les participations du joueur de l'appareil, y compris les parties enregistrées par un autre appareil (joueur confirmé via "ce joueur ?").
+- **Dédoublonnage à l'affichage (décidé le 08/11)** : une même partie enregistrée par plusieurs saisisseurs n'est comptée qu'une fois dans les stats et dans la règle "record personnel". Deux parties terminées sont considérées comme la même si elles ont toutes ces caractéristiques :
+  - même jeu ;
+  - exactement les mêmes joueurs ;
+  - mêmes vainqueurs ;
+  - mêmes totaux (template "scores par manche") ;
+  - "Terminée le" à moins de 30 min d'écart.
+
+  Les données Airtable ne sont **pas** modifiées : chaque saisisseur garde sa partie et son souvenir, et la mesure H1 (parties créées par joueur) reste intacte. Cas limite accepté : deux parties "vainqueur seulement" très courtes avec le même gagnant, terminées à moins de 30 min d'écart.
 - Une partie terminée ne revient pas sur la feuille de score : les corrections se font depuis le souvenir (vainqueurs, scores). `partie_terminee` n'est émis qu'une fois et "Terminée le" n'est pas modifié par une correction.
 - Fait marquant : régénéré après une correction des vainqueurs ou des scores, sauf s'il a été modifié à la main (le texte saisi est conservé).
 
