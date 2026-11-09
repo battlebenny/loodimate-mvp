@@ -1,6 +1,6 @@
 # Loodi-mate MVP : document d'architecture
 
-Date : 2026-11-08. Statut : à valider (questions du relecteur tranchées le 08/11).
+Date : 2026-11-08. Statut : validé le 2026-11-09.
 
 Ce document décrit **comment** construire le MVP. Le **quoi** (hypothèses, parcours P0 à P6, écrans, événements, règles du fait marquant, décisions) est dans les docs produit Obsidian, source de vérité, non dupliquées ici :
 
@@ -73,7 +73,7 @@ Inconnue à lever en tout début de dev (spike court) : la façon dont l'Edge Fu
 - **ID visiteur** (vue invité) : si l'appareil est onboardé, on réutilise son ID appareil (permet d'exclure du calcul H2 les réouvertures du saisisseur) ; sinon, UUID anonyme en `localStorage`. *(mon choix)*
 - **Droits d'écriture** : seul l'appareil créateur d'une partie peut la modifier (feuille, souvenir, photos, fait marquant). Le serveur vérifie que l'ID appareil correspond au Créateur.
 - **Vue invité** : accès par jeton de partage (12 caractères aléatoires, généré côté serveur), route `/s/<jeton>`, lecture seule, page en `noindex`.
-- Secrets `AIRTABLE_API_TOKEN` et `BGG_API_TOKEN` uniquement côté serveur, configurés séparément dans Vercel et dans Lovable.
+- Secrets `AIRTABLE_API_TOKEN` , `AIRTABLE_BASE_ID` et `BGG_API_TOKEN` uniquement côté serveur, configurés séparément dans Vercel et dans Lovable.
 
 ## 6. Synchronisation avec Airtable
 
@@ -138,3 +138,5 @@ Jeu de données simulé, plus riche que les données fictives actuelles, créé 
 ## 12. Laissé au builder
 
 Structure des dossiers et des composants, gestion d'état front, détails de l'API interne (routes, formats), messages d'erreur et états de chargement (en français, ton Loodi), icônes, micro-animations.
+Si le builder demande une modification liée à ces points, réalise le selon ses directives.
+Si tu te retrouves à développer quelque chose en lien avec ces limites, demande l'avis du builder avant.
