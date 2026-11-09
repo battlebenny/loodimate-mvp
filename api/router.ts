@@ -1,5 +1,5 @@
 // Vercel adapter: every /api/* request is rewritten here (see vercel.json).
-import { handle } from '../server/core/router.js'
+import { handle } from '../server/core/index.js'
 import type { Env } from '../server/core/env.js'
 
 function env(): Env {

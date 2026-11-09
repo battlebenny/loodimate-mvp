@@ -2,7 +2,7 @@
 import type { Plugin } from 'vite'
 import { loadEnv } from 'vite'
 import type { IncomingMessage } from 'node:http'
-import { handle } from '../server/core/router.js'
+import { handle } from '../server/core/index.js'
 import type { Env } from '../server/core/env.js'
 
 async function readBody(req: IncomingMessage): Promise<Buffer> {

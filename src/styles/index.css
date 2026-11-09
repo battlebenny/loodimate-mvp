@@ -19,6 +19,8 @@
   --color-ink-soft: var(--color-theme-text-secondary);
   --color-line: var(--color-theme-border-subtle);
   --color-accent: var(--color-module-mate);
+  /* Darker accent for white text on filled buttons (AA contrast). */
+  --color-accent-strong: color-mix(in srgb, var(--color-module-mate) 82%, black);
   --color-danger: var(--color-theme-status-danger-solid);
   --color-success-text: var(--color-theme-status-success-text);
   --font-sans: var(--font-brand);

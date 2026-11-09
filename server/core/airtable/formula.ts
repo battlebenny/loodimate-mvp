@@ -19,3 +19,11 @@ export function byIdsFormula(ids: string[]): string {
 export function byFieldEquals(fieldId: string, value: string): string {
   return `{${fieldId}}='${escapeFormulaString(value)}'`
 }
+
+export function isBlank(fieldId: string): string {
+  return `{${fieldId}}=BLANK()`
+}
+
+export function and(...parts: string[]): string {
+  return `AND(${parts.join(',')})`
+}
