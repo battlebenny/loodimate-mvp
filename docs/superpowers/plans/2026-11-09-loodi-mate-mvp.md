@@ -31,7 +31,13 @@
 1. **iOS : l'app installée n'a pas le même stockage que Safari.** Un testeur qui s'onboarde dans Safari puis installe l'app se retrouve avec un nouvel ID appareil, et son prénom est déjà pris. Comportement attendu : sur iOS hors mode installé, l'écran Bienvenue invite d'abord à installer l'app. Si le prénom appartient déjà à un joueur avec appareil, l'app propose « C'est toi sur un autre appareil ? », qui ajoute le nouvel ID appareil au joueur (liste séparée par des virgules dans le même champ). Tests : Task 3 (`linkDevice` ajoute sans écraser) et Task 2 (formule de recherche par `FIND`).
 2. **Apostrophes et accents dans les noms** (« Azul : Pavillon d'été », « Inès », « D'Artagnan ») dans les formules `filterByFormula`. Attendu : pas d'erreur 422 et une correspondance exacte, insensible à la casse. Test : Task 2 (`escapeFormulaString`, `byNameFormula`).
 3. **Scores négatifs** (Skull King) : le clavier numérique iOS n'a pas de signe moins. Attendu : un bouton « ± » par joueur inverse le signe de la dernière case touchée, et les totaux et vainqueurs gèrent les négatifs. Tests : Task 1 (`computeTotal` avec négatifs, `preselectWinners` avec totaux tous négatifs) et Task 9 (bouton ±).
-4. **Feuille sans aucun score saisi au moment de Terminer.** Attendu : aucun vainqueur présélectionné, bandeau « Pas de vainqueur · Touche pour choisir », fait marquant vide avec « Ajouter un fait marquant », et aucun crash. Tests : Task 1 (`preselectWinners` → `[]`, `buildHighlight` → `null`).
+4. **Partie « vide » au moment de Terminer** : aucun score saisi ou tous les totaux à 0 en « scores par manche », ou aucun vainqueur coché en « vainqueur seulement » (décidé le 09/11). Attendu :
+   - une confirmation avant d'enregistrer : « Aucun score saisi » ou « Aucun vainqueur choisi », puis « Terminer quand même ? » [Terminer quand même] [Revenir à la feuille] ;
+   - si le joueur confirme, la partie passe en `terminée` (elle compte pour H1) ;
+   - elle n'apparaît **pas** dans les stats, mais reste dans l'historique et a son souvenir ;
+   - aucun vainqueur présélectionné, bandeau « Pas de vainqueur · Touche pour choisir », fait marquant vide avec « Ajouter un fait marquant ».
+   
+   Tests : Task 1 (`isEmptyResult`, `preselectWinners` → `[]` si tout est null ou à 0, `buildHighlight` → `null`), Task 8 (dialogue de confirmation) et Task 12 (partie vide exclue des stats).
 5. **Envoi en double** : un double tap sur « Créer » ou « Terminer », ou une relance d'événement après une erreur réseau. Attendu : une seule partie créée, un seul `partie_terminee`, pas d'événement dupliqué. Tests : Task 6 (`finishParty` sur une partie déjà terminée ne réémet rien), Task 4 (événement en relance avec un ID existant ignoré) et Task 8 (bouton désactivé pendant l'envoi).
 
 ---
@@ -141,7 +147,8 @@ Chaque appel envoie l'en-tête `X-Device-Id` quand il est connu. Erreurs : `{ er
   type Template = 'scores par manche' | 'vainqueur seulement'
   type Scores = (number | null)[]              // one entry per round
   computeTotal(scores: Scores): number | null   // null when every cell is empty
-  preselectWinners(totals: { id: string; total: number | null }[]): string[]
+  preselectWinners(totals: { id: string; total: number | null }[]): string[]   // [] when every total is null or 0
+  isEmptyResult(template: Template, totals: (number | null)[], winnerIds: string[]): boolean
   type HighlightInput = { template: Template; gameName: string;
     players: { id: string; name: string; total: number | null }[];
     winnerIds: string[]; previousBestOfWinner: number | null }
@@ -161,7 +168,8 @@ Chaque appel envoie l'en-tête `X-Device-Id` quand il est connu. Erreurs : `{ er
 
 - [ ] **Step 1 : écrire les tests qui échouent.** Valeurs exactes :
   - `computeTotal([8,12,10])` → 30 ; `[8,null,-3]` → 5 ; `[null,null]` → null.
-  - `preselectWinners` : `[a:30,b:30,c:12]` → `[a,b]` ; `[a:-5,b:-2]` → `[b]` ; tous null → `[]`.
+  - `preselectWinners` : `[a:30,b:30,c:12]` → `[a,b]` ; `[a:-5,b:-2]` → `[b]` ; tous null → `[]` ; tous à 0 (ou null et 0 mélangés) → `[]`.
+  - `isEmptyResult(template, totals, winnerIds)` : « scores par manche » avec totaux tous null ou à 0 et sans vainqueur coché → true ; avec un total à 12 → false ; « vainqueur seulement » sans vainqueur → true ; avec un vainqueur → false ; vainqueur coché à la main sur une feuille sans score → false.
   - `buildHighlight`, une règle par test, dans l'ordre de priorité (textes de `Wireframes Loodi-mate.md`) :
     - égalité `a=30,b=30`, winners `[a,b]` → `"Égalité entre Léa et Max avec 30 points"` ; à 3 → `"Égalité entre Léa, Max et Inès avec 30 points"` ;
     - record : winner Inès 58, `previousBestOfWinner` 51 → `"Nouveau record d'Inès sur Azul : 58 points"` ; `previousBestOfWinner` null (aucune partie précédente) → pas de record ; 58 = 58 → pas de record ;
@@ -373,7 +381,7 @@ Chaque appel envoie l'en-tête `X-Device-Id` quand il est connu. Erreurs : `{ er
 - [ ] **Step 5 :** écrire la page, en reprenant le contenu de `.wireframes/NouvellePartie.dc.html` :
   - `track('creation_debut', {origin:'app'})` une seule fois au montage (garde par `useRef`), et `performance.now()` mémorisé ;
   - Jeu : recherche avec un délai de 250 ms, suggestions BGG (nom et année), ligne « Utiliser « … » tel quel · texte libre », carte du jeu choisi avec « Changer » ;
-  - Joueurs : puces retirables ; champ « Ajouter un joueur » avec bouton « Ajouter » ; suggestions « Déjà venus : » où **« + Moi » vient en premier** (ajoute le joueur de l'appareil sous son prénom), puis `knownNames` ;
+  - Joueurs : **le joueur de l'appareil est ajouté par défaut** en première puce, sous son prénom (décidé le 09/11), et reste retirable ; champ « Ajouter un joueur » avec bouton « Ajouter » ; suggestions « Déjà venus : » issues de `knownNames` ;
   - avant l'ajout d'un nom tapé, appel à `players/lookup` :
     - `onboarded` ou `unclaimed` → « {Nom} : ce joueur ? » [Oui] [Non, ajouter une initiale] ;
     - nom déjà dans la partie (`sameName`) → demander une initiale ;
@@ -411,7 +419,7 @@ Chaque appel envoie l'en-tête `X-Device-Id` quand il est connu. Erreurs : `{ er
   
   Chaque modification passe par `saveDraft`. Envoi au serveur (`PUT sheet`) : au changement de manches ou de template ; au retour (bouton retour) ; sur `visibilitychange` hidden avec `keepalive`.
   
-  « Terminer » → `POST finish` → `clearDraft` → navigation vers `/partie/:id`, **sans** `souvenir_ouvert`. Pendant l'envoi le bouton est désactivé.
+  « Terminer » : si `isEmptyResult(...)`, un dialogue (`<dialog>` accessible) s'ouvre d'abord : titre « Aucun score saisi » (« Aucun vainqueur choisi » en « vainqueur seulement »), texte « La partie sera enregistrée comme terminée, mais elle ne comptera pas dans les statistiques. », boutons [Terminer quand même] et [Revenir à la feuille]. Ensuite `POST finish` → `clearDraft` → navigation vers `/partie/:id`, **sans** `souvenir_ouvert`. Pendant l'envoi le bouton est désactivé.
   
   Reprise (P3) : la page charge `GET parties/:id`, puis applique le brouillon local s'il existe. Une partie déjà terminée redirige vers le souvenir.
 - [ ] **Step 6 : vérifier** dans le navigateur :
@@ -514,7 +522,8 @@ Chaque appel envoie l'en-tête `X-Device-Id` quand il est connu. Erreurs : `{ er
   - totaux : parties = 12, victoires = 5 → `winRate` 42 ;
   - par jeu : `best`, `avg` (arrondi entier), `min` calculés sur les totaux **du joueur de l'appareil** ; jeu « vainqueur seulement » → `hasScores: false` et valeurs null ; tri par nombre de parties décroissant ;
   - `winsByPlayer` : victoires de chaque joueur présent dans ces parties, triées décroissant ;
-  - seules les parties `terminée` comptent.
+  - seules les parties `terminée` comptent ;
+  - une partie vide (`isEmptyResult` vrai : aucun vainqueur et aucun total non nul) est exclue des stats et de `previousBestOf`.
 - [ ] **Step 2 :** FAIL. **Step 3 :** implémenter. `loadStats` suit cette chaîne : participations du joueur, puis leurs parties terminées, puis toutes leurs participations, puis les jeux et les joueurs (≤ 6 requêtes). `previousBestOf` (Task 6) réutilise `findDuplicates`. **Step 4 :** PASS.
 - [ ] **Step 5 :** écrire la page, en reprenant `.wireframes/Stats.dc.html` :
   - « Mes statistiques », puis « Parties où {prénom} a joué » ;
@@ -532,7 +541,7 @@ Chaque appel envoie l'en-tête `X-Device-Id` quand il est connu. Erreurs : `{ er
 - Create : `scripts/demo-manifest.json`, `scripts/purge-demo.mjs`, `docs/demo.md`
 
 - [ ] **Step 1 :** créer les données via le connecteur Airtable (pas l'app) :
-  - 5 joueurs onboardés `demo-<prénom>` (Benny, Léa, Max, Inès, Hugo) et 2 non onboardés ;
+  - 5 joueurs onboardés (Benny, Léa, Max, Inès, Hugo). Benny a l'ID appareil `demo-jedha` (celui du téléphone de démo), les autres `demo-<prénom>`. S'y ajoutent 2 joueurs non onboardés ;
   - 6 jeux réels avec BGG ID et visuel (Azul, 7 Wonders, Skull King, Cascadia, Cardia et Cluedo, ce dernier en « vainqueur seulement ») ;
   - environ 20 parties terminées sur les 5 dernières semaines, dont : un record battu, 2 égalités, un doublon enregistré par deux joueurs, des scores négatifs à Skull King ;
   - 2 parties en cours ;
@@ -541,8 +550,8 @@ Chaque appel envoie l'en-tête `X-Device-Id` quand il est connu. Erreurs : `{ er
   
   Les ID d'appareil et de visiteur sont préfixés `demo-`. Chaque ID d'enregistrement créé va dans `scripts/demo-manifest.json` (`{ table: string[] }`).
 - [ ] **Step 2 :** écrire `purge-demo.mjs` : il lit le manifeste, puis supprime dans l'ordre événements, participations, parties, joueurs et jeux, par lots de 10. Mode `--dry-run` par défaut, `--confirm` pour supprimer. Lancement par Benny : `node --env-file=.env scripts/purge-demo.mjs --dry-run`.
-- [ ] **Step 3 :** écrire `docs/demo.md` : comment faire apparaître l'appareil de démo sur le téléphone (route cachée `/?demo=<deviceId>` qui enregistre l'ID `demo-benny` en local, **active seulement si l'ID commence par `demo-`**), le scénario de démo des parcours, et la date de purge (après le 16 novembre).
-- [ ] **Step 4 : vérifier** : chaque section du dashboard « Pilotage hypothèses » affiche une valeur ; l'app avec l'appareil `demo-benny` montre Accueil, souvenirs et stats remplis ; `purge-demo.mjs --dry-run` liste exactement le contenu du manifeste.
+- [ ] **Step 3 :** écrire `docs/demo.md` : comment faire apparaître l'appareil de démo sur le téléphone (URL cachée `/?demo=demo-jedha` qui enregistre l'ID appareil `demo-jedha` en local, décidé le 09/11, **active seulement si l'ID commence par `demo-`**), le scénario de démo des parcours, et la date de purge (après le 16 novembre).
+- [ ] **Step 4 : vérifier** : chaque section du dashboard « Pilotage hypothèses » affiche une valeur ; l'app avec l'appareil `demo-jedha` montre Accueil, souvenirs et stats remplis ; `purge-demo.mjs --dry-run` liste exactement le contenu du manifeste.
 - [ ] **Step 5 :** commit `chore: demo data manifest and purge script`.
 
 ### Task 14 : recette finale (avant la démo)
