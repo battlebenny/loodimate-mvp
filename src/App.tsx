@@ -6,6 +6,7 @@ import { NewPartyPage } from './features/new-party/NewPartyPage'
 import { SheetPage } from './features/sheet/SheetPage'
 import { SouvenirPage } from './features/souvenir/SouvenirPage'
 import { GuestPage } from './features/guest/GuestPage'
+import { HomePage } from './features/home/HomePage'
 import { PlayerContext } from './app/PlayerContext'
 import { api, ApiError } from './lib/api'
 import { clearPlayer, getDeviceId, getPlayer, setIdentity } from './lib/device'
@@ -51,7 +52,7 @@ function OnboardedApp() {
   return (
     <PlayerContext.Provider value={gate.player}>
       <Routes>
-        <Route path="/" element={<Placeholder title={`Salut ${gate.player.name}`} />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/nouvelle" element={<NewPartyPage />} />
         <Route path="/partie/:id/feuille" element={<SheetPage />} />
         <Route path="/partie/:id" element={<SouvenirPage />} />
