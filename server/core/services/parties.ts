@@ -11,7 +11,7 @@ import { newShareToken } from '../../../shared/token.js'
 import type { CreatePartyInput, PartyDTO, PartyStatus, PartySummaryDTO, Scores, SheetInput, Template } from '../../../shared/types.js'
 import { recordEvent } from './events.js'
 import { findOrCreateGame, setGameTemplate, toGame } from './games.js'
-import { requirePlayer } from './players.js'
+import { requirePlayer, requirePlayerRecord } from './players.js'
 
 const MAX_PLAYERS = 12
 const MAX_ROUNDS = 30
@@ -340,9 +340,8 @@ export async function getSharedParty(db: Db, token: string): Promise<PartyDTO> {
 }
 
 export async function listParties(db: Db, deviceId: string | null, status: PartyStatus): Promise<PartySummaryDTO[]> {
-  const me = await requirePlayer(db, deviceId)
-  const [player] = await db.getByIds(T.players, [me.id])
-  const parties = (await db.getByIds(T.parties, ids(player?.fields[F.players.createdParties]))).filter((p) => p.fields[F.parties.status] === status)
+  const player = await requirePlayerRecord(db, deviceId)
+  const parties = (await db.getByIds(T.parties, ids(player.fields[F.players.createdParties]))).filter((p) => p.fields[F.parties.status] === status)
   if (parties.length === 0) return []
   const parts = await db.getByIds(T.participations, parties.flatMap((p) => ids(p.fields[F.parties.participations])))
   const [players, games] = await Promise.all([

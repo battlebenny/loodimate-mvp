@@ -7,6 +7,7 @@ import { SheetPage } from './features/sheet/SheetPage'
 import { SouvenirPage } from './features/souvenir/SouvenirPage'
 import { GuestPage } from './features/guest/GuestPage'
 import { HomePage } from './features/home/HomePage'
+import { StatsPage } from './features/stats/StatsPage'
 import { PlayerContext } from './app/PlayerContext'
 import { api, ApiError } from './lib/api'
 import { clearPlayer, getDeviceId, getPlayer, setIdentity } from './lib/device'
@@ -56,7 +57,7 @@ function OnboardedApp() {
         <Route path="/nouvelle" element={<NewPartyPage />} />
         <Route path="/partie/:id/feuille" element={<SheetPage />} />
         <Route path="/partie/:id" element={<SouvenirPage />} />
-        <Route path="/stats" element={<Placeholder title="Mes statistiques" />} />
+        <Route path="/stats" element={<StatsPage />} />
         <Route path="*" element={<Placeholder title="Page introuvable" />} />
       </Routes>
     </PlayerContext.Provider>

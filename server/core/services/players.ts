@@ -15,11 +15,15 @@ export async function findPlayerByDevice(db: Db, deviceId: string): Promise<Play
   return recs[0] ? toPlayer(recs[0]) : null
 }
 
-/** Same as findPlayerByDevice but fails with 401 when the device is not onboarded. */
+/** The device's player record (with its links); fails with 401 when the device is not onboarded. */
+export async function requirePlayerRecord(db: Db, deviceId: string | null): Promise<AirRecord> {
+  const recs = deviceId ? await db.list(T.players, { filterByFormula: byDeviceFormula(F.players.device, deviceId), maxRecords: 1 }) : []
+  if (!recs[0]) throw new HttpError(401, 'not_onboarded', 'Présente-toi d’abord pour utiliser Loodi-mate.')
+  return recs[0]
+}
+
 export async function requirePlayer(db: Db, deviceId: string | null): Promise<PlayerDTO> {
-  const p = deviceId ? await findPlayerByDevice(db, deviceId) : null
-  if (!p) throw new HttpError(401, 'not_onboarded', 'Présente-toi d’abord pour utiliser Loodi-mate.')
-  return p
+  return toPlayer(await requirePlayerRecord(db, deviceId))
 }
 
 export function linkDevice(current: string | null | undefined, deviceId: string): string {
@@ -68,9 +72,9 @@ export async function onboard(db: Db, deviceId: string, firstName: string, mode:
 
 /** Names already used by this device (players of the parties it created), most frequent first. */
 export async function knownNames(db: Db, deviceId: string | null): Promise<string[]> {
-  const me = await requirePlayer(db, deviceId)
-  const [rec] = await db.getByIds(T.players, [me.id])
-  const parties = await db.getByIds(T.parties, (rec?.fields[F.players.createdParties] as string[] | undefined) ?? [])
+  const rec = await requirePlayerRecord(db, deviceId)
+  const me = toPlayer(rec)
+  const parties = await db.getByIds(T.parties, (rec.fields[F.players.createdParties] as string[] | undefined) ?? [])
   const parts = await db.getByIds(T.participations, parties.flatMap((p) => (p.fields[F.parties.participations] as string[] | undefined) ?? []))
   const count = new Map<string, number>()
   for (const p of parts) {

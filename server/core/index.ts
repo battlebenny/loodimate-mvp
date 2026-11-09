@@ -4,7 +4,8 @@ import { playerRoutes } from './routes/players.js'
 import { eventRoutes } from './routes/events.js'
 import { gameRoutes } from './routes/games.js'
 import { partyRoutes } from './routes/parties.js'
+import { statsRoutes } from './routes/stats.js'
 
-routes.push(...playerRoutes, ...eventRoutes, ...gameRoutes, ...partyRoutes)
+routes.push(...playerRoutes, ...eventRoutes, ...gameRoutes, ...partyRoutes, ...statsRoutes)
 
 export { handle }
