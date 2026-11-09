@@ -4,6 +4,7 @@ import { WelcomePage } from './features/onboarding/WelcomePage'
 import { AppShell } from './components/shell/AppShell'
 import { NewPartyPage } from './features/new-party/NewPartyPage'
 import { SheetPage } from './features/sheet/SheetPage'
+import { SouvenirPage } from './features/souvenir/SouvenirPage'
 import { PlayerContext } from './app/PlayerContext'
 import { api, ApiError } from './lib/api'
 import { clearPlayer, getDeviceId, getPlayer, setIdentity } from './lib/device'
@@ -52,7 +53,7 @@ function OnboardedApp() {
         <Route path="/" element={<Placeholder title={`Salut ${gate.player.name}`} />} />
         <Route path="/nouvelle" element={<NewPartyPage />} />
         <Route path="/partie/:id/feuille" element={<SheetPage />} />
-        <Route path="/partie/:id" element={<Placeholder title="Souvenir" />} />
+        <Route path="/partie/:id" element={<SouvenirPage />} />
         <Route path="/stats" element={<Placeholder title="Mes statistiques" />} />
         <Route path="*" element={<Placeholder title="Page introuvable" />} />
       </Routes>
