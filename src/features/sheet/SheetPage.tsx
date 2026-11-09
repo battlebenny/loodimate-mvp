@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from '../../components/shell/AppShell'
 import { Button } from '../../components/ui/Button'
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog'
 import { api } from '../../lib/api'
 import { clearDraft, loadDraft, resizeRounds, saveDraft } from '../../lib/draft'
+import { createQueue } from '../../lib/queue'
 import { computeTotal, isEmptyResult } from '../../../shared/scoring'
 import type { PartyDTO, SheetInput, Template } from '../../../shared/types'
 import { ScoreBlock } from './ScoreBlock'
@@ -35,6 +36,8 @@ export function SheetPage() {
   const [confirmEmpty, setConfirmEmpty] = useState(false)
   const sheetRef = useRef(sheet)
   sheetRef.current = sheet
+  // Saves and "Terminer" go through one queue so a late save never overwrites the finish.
+  const queue = useMemo(createQueue, [])
 
   useEffect(() => {
     if (party) return
@@ -49,9 +52,9 @@ export function SheetPage() {
   const sync = useCallback(
     (s: SheetInput | null = sheetRef.current, keepalive = false) => {
       if (!s) return Promise.resolve()
-      return api('PUT', `parties/${id}/sheet`, s, { keepalive }).catch(() => {})
+      return queue(() => api('PUT', `parties/${id}/sheet`, s, { keepalive })).catch(() => {})
     },
-    [id],
+    [id, queue],
   )
 
   useEffect(() => {
@@ -100,7 +103,8 @@ export function SheetPage() {
     setFinishing(true)
     setError(undefined)
     try {
-      const done = await api<PartyDTO>('POST', `parties/${id}/finish`, { ...sheet, winners: isScore ? [] : sheet.winners })
+      const payload = { ...sheet, winners: isScore ? [] : sheet.winners }
+      const done = await queue(() => api<PartyDTO>('POST', `parties/${id}/finish`, payload))
       clearDraft(id)
       navigate(`/partie/${id}`, { replace: true, state: { party: done } })
     } catch (e) {

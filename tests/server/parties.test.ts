@@ -243,3 +243,16 @@ describe('reading', () => {
     expect(await listParties(db, 'dev-lea', 'terminée')).toEqual([])
   })
 })
+
+describe('saveSheet and winners', () => {
+  it('does not touch winners for a round-score sheet (they are decided at finish)', async () => {
+    const p = await newAzul(['Benny', 'Léa'])
+    await finishParty(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))
+    const lea = db.find(T.participations, pid(p, 'Léa'))
+    expect(lea.fields[F.participations.winner]).toBe(true)
+    // A late sheet save racing the finish must not reset the winner.
+    db.find(T.parties, p.id).fields[F.parties.status] = 'en cours'
+    await saveSheet(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))
+    expect(db.find(T.participations, pid(p, 'Léa')).fields[F.participations.winner]).toBe(true)
+  })
+})

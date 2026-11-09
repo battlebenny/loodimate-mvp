@@ -5,6 +5,7 @@ import { AppShell } from './components/shell/AppShell'
 import { NewPartyPage } from './features/new-party/NewPartyPage'
 import { SheetPage } from './features/sheet/SheetPage'
 import { SouvenirPage } from './features/souvenir/SouvenirPage'
+import { GuestPage } from './features/guest/GuestPage'
 import { PlayerContext } from './app/PlayerContext'
 import { api, ApiError } from './lib/api'
 import { clearPlayer, getDeviceId, getPlayer, setIdentity } from './lib/device'
@@ -64,7 +65,7 @@ function OnboardedApp() {
 export function App() {
   return (
     <Routes>
-      <Route path="/s/:token" element={<Placeholder title="Souvenir partagé" />} />
+      <Route path="/s/:token" element={<GuestPage />} />
       <Route path="*" element={<OnboardedApp />} />
     </Routes>
   )

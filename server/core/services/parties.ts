@@ -170,17 +170,16 @@ export async function createParty(db: Db, deviceId: string | null, input: Create
 
 // ---------- sheet ----------
 
-function sheetUpdates(b: Bundle, s: SheetInput, winners: string[], template: Template, rounds: number) {
+function sheetUpdates(b: Bundle, s: SheetInput, winners: string[] | null, template: Template, rounds: number) {
   return b.parts.map((p) => {
     const scores = template === 'vainqueur seulement' ? [] : cleanScores(s.scores?.[p.id] ?? parseScores(p.fields[F.participations.scores]), rounds)
-    return {
-      id: p.id,
-      fields: {
-        [F.participations.scores]: template === 'vainqueur seulement' ? '' : JSON.stringify(scores),
-        [F.participations.total]: template === 'vainqueur seulement' ? null : computeTotal(scores),
-        [F.participations.winner]: winners.includes(p.id),
-      },
+    const fields: Record<string, unknown> = {
+      [F.participations.scores]: template === 'vainqueur seulement' ? '' : JSON.stringify(scores),
+      [F.participations.total]: template === 'vainqueur seulement' ? null : computeTotal(scores),
     }
+    // null = leave winners untouched (round-score sheets decide winners at finish).
+    if (winners) fields[F.participations.winner] = winners.includes(p.id)
+    return { id: p.id, fields }
   })
 }
 
@@ -190,7 +189,7 @@ function readSheet(s: SheetInput): { template: Template; rounds: number } {
   return { template, rounds }
 }
 
-async function writeSheet(db: Db, b: Bundle, s: SheetInput, winners: string[], extraPartyFields: Record<string, unknown> = {}) {
+async function writeSheet(db: Db, b: Bundle, s: SheetInput, winners: string[] | null, extraPartyFields: Record<string, unknown> = {}) {
   const { template, rounds } = readSheet(s)
   const updated = await db.update(T.participations, sheetUpdates(b, s, winners, template, rounds))
   const [party] = await db.update(T.parties, [{ id: b.party.id, fields: { [F.parties.template]: template, [F.parties.rounds]: rounds, ...extraPartyFields } }])
@@ -211,7 +210,8 @@ export async function saveSheet(db: Db, deviceId: string | null, partyId: string
   const { party } = await loadOwned(db, deviceId, partyId)
   if (party.fields[F.parties.status] === 'terminée') throw new HttpError(409, 'already_finished', 'Cette partie est déjà terminée.')
   const b = await loadBundle(db, party)
-  await writeSheet(db, b, s, validWinners(b, s?.winners))
+  const winners = readSheet(s).template === 'vainqueur seulement' ? validWinners(b, s?.winners) : null
+  await writeSheet(db, b, s, winners)
   return toDTO(b, true)
 }
 
