@@ -11,8 +11,8 @@ export const partyRoutes: Route[] = [
     pattern: 'parties',
     run: async (ctx) => {
       const status = ctx.query.get('status')
-      if (status !== 'en cours' && status !== 'terminée') throw new HttpError(400, 'bad_request', 'Statut invalide.')
-      return { parties: await listParties(dbFor(ctx), ctx.deviceId, status as PartyStatus) }
+      if (status && status !== 'en cours' && status !== 'terminée') throw new HttpError(400, 'bad_request', 'Statut invalide.')
+      return { parties: await listParties(dbFor(ctx), ctx.deviceId, (status as PartyStatus | null) ?? undefined) }
     },
   },
   { method: 'GET', pattern: 'parties/:id', run: async (ctx) => getParty(dbFor(ctx), ctx.deviceId, ctx.params.id!) },

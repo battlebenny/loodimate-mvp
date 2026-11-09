@@ -105,6 +105,41 @@ function toDTO(b: Bundle, owner: boolean): PartyDTO {
 
 // ---------- create ----------
 
+const RETRY_WINDOW_MS = 2 * 60 * 1000
+
+function createParticipations(db: Db, partyId: string, ref: string, players: { id: string; name: string }[], template: Template) {
+  return db.create(
+    T.participations,
+    players.map((p) => ({
+      [F.participations.ref]: participationRef(ref, p.name),
+      [F.participations.party]: [partyId],
+      [F.participations.player]: [p.id],
+      [F.participations.scores]: template === 'vainqueur seulement' ? '' : '[null]',
+      [F.participations.winner]: false,
+    })),
+  )
+}
+
+/** An ongoing party of the same game created less than 2 minutes ago with the same players (or none yet). */
+async function findRetriedParty(db: Db, createdIds: string[], gameId: string, playerIds: string[]): Promise<AirRecord | null> {
+  const recent = await db.getByIds(T.parties, createdIds.slice(-5))
+  const candidates = recent.filter(
+    (p) =>
+      p.fields[F.parties.status] === 'en cours' &&
+      ids(p.fields[F.parties.game]).includes(gameId) &&
+      Date.now() - Date.parse(str(p.fields[F.parties.createdAt])) < RETRY_WINDOW_MS,
+  )
+  if (candidates.length === 0) return null
+  const parts = await db.getByIds(T.participations, candidates.flatMap((p) => ids(p.fields[F.parties.participations])))
+  const wanted = [...playerIds].sort().join(',')
+  for (const c of candidates) {
+    const own = parts.filter((x) => ids(c.fields[F.parties.participations]).includes(x.id))
+    const got = own.map((x) => ids(x.fields[F.participations.player])[0] ?? '').sort().join(',')
+    if (own.length === 0 || got === wanted) return c
+  }
+  return null
+}
+
 export async function createParty(db: Db, deviceId: string | null, input: CreatePartyInput): Promise<PartyDTO> {
   const gameName = normalizeName(input.game?.name ?? '')
   const wanted = (input.players ?? []).map((p) => ({ name: normalizeName(p.name ?? ''), playerId: p.playerId }))
@@ -115,7 +150,8 @@ export async function createParty(db: Db, deviceId: string | null, input: Create
     throw new HttpError(400, 'duplicate_name', 'Deux joueurs ont le même nom : ajoute une initiale.')
   }
 
-  const me = await requirePlayer(db, deviceId)
+  const meRec = await requirePlayerRecord(db, deviceId)
+  const me = { id: meRec.id, name: str(meRec.fields[F.players.name]) }
   const game = await findOrCreateGame(db, { bggId: input.game.bggId, name: gameName, image: input.game.image ?? null })
 
   // Resolve players by name in one query, create the missing ones in one batch.
@@ -133,6 +169,20 @@ export async function createParty(db: Db, deviceId: string | null, input: Create
   }
   const players = wanted.map((_, i) => resolved.get(i)!)
 
+  // A retry of the same creation (lost response, partial failure) returns the party already created.
+  const retried = await findRetriedParty(db, ids(meRec.fields[F.players.createdParties]), game.id, players.map((p) => p.id))
+  if (retried) {
+    const b = await loadBundle(db, retried)
+    if (b.parts.length === 0) {
+      const ref = str(retried.fields[F.parties.ref])
+      b.parts = await createParticipations(db, retried.id, ref, players, game.template)
+      b.party.fields[F.parties.participations] = b.parts.map((x) => x.id)
+      for (const pl of players) b.players.set(pl.id, { id: pl.id, createdTime: '', fields: { [F.players.name]: pl.name } })
+    }
+    await recordEvent(db, { action: 'partie_creee', origin: 'app', visitorId: deviceId!, partyId: retried.id, playerId: me.id, eventId: `partie_creee-${retried.id}`, retry: true })
+    return toDTO(b, true)
+  }
+
   const now = new Date()
   const ref = partyRef(game.name, now)
   const [party] = await db.create(T.parties, [
@@ -148,17 +198,8 @@ export async function createParty(db: Db, deviceId: string | null, input: Create
       [F.parties.shareToken]: newShareToken(),
     },
   ])
-  const parts = await db.create(
-    T.participations,
-    players.map((p) => ({
-      [F.participations.ref]: participationRef(ref, p.name),
-      [F.participations.party]: [party!.id],
-      [F.participations.player]: [p.id],
-      [F.participations.scores]: game.template === 'vainqueur seulement' ? '' : '[null]',
-      [F.participations.winner]: false,
-    })),
-  )
-  await recordEvent(db, { action: 'partie_creee', origin: 'app', visitorId: deviceId!, partyId: party!.id, playerId: me.id })
+  const parts = await createParticipations(db, party!.id, ref, players, game.template)
+  await recordEvent(db, { action: 'partie_creee', origin: 'app', visitorId: deviceId!, partyId: party!.id, playerId: me.id, eventId: `partie_creee-${party!.id}` })
 
   party!.fields[F.parties.participations] = parts.map((p) => p.id)
   const playerRecs = new Map<string, AirRecord>(
@@ -258,19 +299,27 @@ async function autoHighlight(db: Db, dto: PartyDTO): Promise<string | null> {
 
 export async function finishParty(db: Db, deviceId: string | null, partyId: string, s: SheetInput): Promise<PartyDTO> {
   const { playerId, party } = await loadOwned(db, deviceId, partyId)
-  if (party.fields[F.parties.status] === 'terminée') throw new HttpError(409, 'already_finished', 'Cette partie est déjà terminée.')
   const b = await loadBundle(db, party)
+  const event = { action: 'partie_terminee' as const, origin: 'app' as const, visitorId: deviceId!, partyId, playerId, eventId: `partie_terminee-${partyId}` }
+  if (party.fields[F.parties.status] === 'terminée') {
+    // Idempotent: a retry (lost response, earlier partial failure) gets the souvenir and the event is ensured.
+    await recordEvent(db, { ...event, retry: true })
+    return toDTO(b, true)
+  }
   const { template, rounds } = readSheet(s)
   let winners = validWinners(b, s?.winners)
   if (winners.length === 0 && template === 'scores par manche') {
     winners = preselectWinners(b.parts.map((p) => ({ id: p.id, total: computeTotal(cleanScores(s?.scores?.[p.id], rounds)) })))
   }
   const finishedAt = new Date().toISOString()
-  await writeSheet(db, b, s, winners, { [F.parties.status]: 'terminée', [F.parties.finishedAt]: finishedAt })
+  await writeSheet(db, b, s, winners)
   const dto = toDTO(b, true)
+  dto.status = 'terminée'
+  dto.finishedAt = finishedAt
   dto.highlight = await autoHighlight(db, dto)
-  await db.update(T.parties, [{ id: partyId, fields: { [F.parties.highlight]: dto.highlight ?? '' } }])
-  await recordEvent(db, { action: 'partie_terminee', origin: 'app', visitorId: deviceId!, partyId, playerId })
+  // Status, finish date and highlight land together, so a failure before this line leaves the party resumable.
+  await db.update(T.parties, [{ id: partyId, fields: { [F.parties.status]: 'terminée', [F.parties.finishedAt]: finishedAt, [F.parties.highlight]: dto.highlight ?? '' } }])
+  await recordEvent(db, event)
   return dto
 }
 
@@ -339,9 +388,9 @@ export async function getSharedParty(db: Db, token: string): Promise<PartyDTO> {
   return toDTO(await loadBundle(db, party), false)
 }
 
-export async function listParties(db: Db, deviceId: string | null, status: PartyStatus): Promise<PartySummaryDTO[]> {
+export async function listParties(db: Db, deviceId: string | null, status?: PartyStatus): Promise<PartySummaryDTO[]> {
   const player = await requirePlayerRecord(db, deviceId)
-  const parties = (await db.getByIds(T.parties, ids(player.fields[F.players.createdParties]))).filter((p) => p.fields[F.parties.status] === status)
+  const parties = (await db.getByIds(T.parties, ids(player.fields[F.players.createdParties]))).filter((p) => !status || p.fields[F.parties.status] === status)
   if (parties.length === 0) return []
   const parts = await db.getByIds(T.participations, parties.flatMap((p) => ids(p.fields[F.parties.participations])))
   const [players, games] = await Promise.all([
@@ -356,7 +405,7 @@ export async function listParties(db: Db, deviceId: string | null, status: Party
     const game = gameOf.get(ids(p.fields[F.parties.game])[0] ?? '')
     return {
       id: p.id,
-      status,
+      status: (p.fields[F.parties.status] as PartyStatus | undefined) ?? 'en cours',
       template: (p.fields[F.parties.template] as Template | undefined) ?? 'scores par manche',
       rounds: typeof p.fields[F.parties.rounds] === 'number' ? (p.fields[F.parties.rounds] as number) : 1,
       createdAt: str(p.fields[F.parties.createdAt]) || p.createdTime,
@@ -368,6 +417,6 @@ export async function listParties(db: Db, deviceId: string | null, status: Party
       firstPhotoThumb: photos[0] ? (photos[0].thumbnails?.large?.url ?? photos[0].url) : null,
     }
   })
-  const key = (x: PartySummaryDTO) => Date.parse((status === 'terminée' ? x.finishedAt : null) ?? x.createdAt)
+  const key = (x: PartySummaryDTO) => Date.parse(x.finishedAt ?? x.createdAt)
   return out.sort((a, b) => key(b) - key(a))
 }

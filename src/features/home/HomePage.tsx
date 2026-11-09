@@ -22,11 +22,14 @@ export function HomePage() {
 
   const load = useCallback(() => {
     setError(undefined)
-    Promise.all([
-      api<{ parties: PartySummaryDTO[] }>('GET', `parties?status=${encodeURIComponent('en cours')}`),
-      api<{ parties: PartySummaryDTO[] }>('GET', `parties?status=${encodeURIComponent('terminée')}`),
-    ])
-      .then(([a, b]) => setLists({ ongoing: a.parties, finished: b.parties }))
+    // One call for both lists keeps Airtable under its 5 requests per second.
+    api<{ parties: PartySummaryDTO[] }>('GET', 'parties')
+      .then(({ parties }) =>
+        setLists({
+          ongoing: parties.filter((p) => p.status === 'en cours').sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
+          finished: parties.filter((p) => p.status === 'terminée').sort((a, b) => Date.parse(b.finishedAt ?? b.createdAt) - Date.parse(a.finishedAt ?? a.createdAt)),
+        }),
+      )
       .catch((e) => setError(e instanceof Error ? e.message : 'Une erreur est survenue.'))
   }, [])
 

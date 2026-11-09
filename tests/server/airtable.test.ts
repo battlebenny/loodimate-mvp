@@ -60,24 +60,42 @@ describe('AirtableClient', () => {
     expect(f.calls[0]!.init.method).toBe('PATCH')
   })
 
-  it('retries once after a 429 then reports busy', async () => {
+  it('backs off 1.5 s then 4 s after 429s, then reports busy', async () => {
     vi.useFakeTimers()
-    const f = fakeFetch([new Response('', { status: 429 }), new Response('', { status: 429 })])
+    const f = fakeFetch([new Response('', { status: 429 }), new Response('', { status: 429 }), new Response('', { status: 429 })])
     const db = new AirtableClient(env, f.fn)
     const p = db.list(T.players)
     const assertion = expect(p).rejects.toMatchObject({ status: 503, code: 'busy' })
-    await vi.advanceTimersByTimeAsync(1100)
-    await assertion
+    await vi.advanceTimersByTimeAsync(1400)
+    expect(f.calls).toHaveLength(1)
+    await vi.advanceTimersByTimeAsync(200)
     expect(f.calls).toHaveLength(2)
+    await vi.advanceTimersByTimeAsync(4100)
+    await assertion
+    expect(f.calls).toHaveLength(3)
   })
 
-  it('succeeds when the retry after a 429 works', async () => {
+  it('succeeds when a retry after a 429 works', async () => {
     vi.useFakeTimers()
     const f = fakeFetch([new Response('', { status: 429 }), ok({ records: [] })])
     const db = new AirtableClient(env, f.fn)
     const p = db.list(T.players)
-    await vi.advanceTimersByTimeAsync(1100)
+    await vi.advanceTimersByTimeAsync(1700)
     await expect(p).resolves.toEqual([])
+  })
+
+  it('spaces consecutive calls by at least 200 ms to stay under 5 requests per second', async () => {
+    vi.useFakeTimers()
+    const f = fakeFetch([ok({ records: [] }), ok({ records: [] }), ok({ records: [] })])
+    const db = new AirtableClient(env, f.fn)
+    const all = Promise.all([db.list(T.players), db.list(T.games), db.list(T.parties)])
+    await vi.advanceTimersByTimeAsync(0)
+    expect(f.calls).toHaveLength(1)
+    await vi.advanceTimersByTimeAsync(210)
+    expect(f.calls).toHaveLength(2)
+    await vi.advanceTimersByTimeAsync(210)
+    expect(f.calls).toHaveLength(3)
+    await all
   })
 
   it('maps other API errors to a 502 without leaking details', async () => {

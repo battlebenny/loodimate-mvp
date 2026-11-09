@@ -125,7 +125,8 @@ describe('finishParty', () => {
     expect(out.highlight).toBe('Victoire de Léa avec 47 points, 6 de plus que Benny')
     expect(db.find(T.parties, p.id).fields[F.parties.highlight]).toBe(out.highlight)
     expect(actions()).toEqual(['partie_creee', 'partie_terminee'])
-    await expect(finishParty(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))).rejects.toMatchObject({ status: 409, code: 'already_finished' })
+    // Finishing again is idempotent (final review I2): same souvenir, no second event.
+    expect((await finishParty(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))).id).toBe(p.id)
     expect(actions()).toEqual(['partie_creee', 'partie_terminee'])
   })
 
@@ -233,13 +234,13 @@ describe('reading', () => {
 
   it('lists the device parties by status', async () => {
     const a = await newAzul(['Benny', 'Léa'])
-    const b = await newAzul(['Benny', 'Léa'])
-    await finishParty(db, 'dev-me', b.id, sheet(b, { Benny: [3], Léa: [5] }))
+    const b = await newAzul(['Benny', 'Inès'])
+    await finishParty(db, 'dev-me', b.id, sheet(b, { Benny: [3], Inès: [5] }))
     const ongoing = await listParties(db, 'dev-me', 'en cours')
     expect(ongoing.map((x) => x.id)).toEqual([a.id])
     const done = await listParties(db, 'dev-me', 'terminée')
     expect(done).toHaveLength(1)
-    expect(done[0]).toMatchObject({ id: b.id, playerCount: 2, winnerNames: ['Léa'], photoCount: 0, game: { name: 'Azul', image: null } })
+    expect(done[0]).toMatchObject({ id: b.id, playerCount: 2, winnerNames: ['Inès'], photoCount: 0, game: { name: 'Azul', image: null } })
     expect(await listParties(db, 'dev-lea', 'terminée')).toEqual([])
   })
 })
@@ -254,5 +255,68 @@ describe('saveSheet and winners', () => {
     db.find(T.parties, p.id).fields[F.parties.status] = 'en cours'
     await saveSheet(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))
     expect(db.find(T.participations, pid(p, 'Léa')).fields[F.participations.winner]).toBe(true)
+  })
+})
+
+describe('final review fixes', () => {
+  it('I2: finishing again is idempotent and re-emits a missing partie_terminee', async () => {
+    const p = await newAzul(['Benny', 'Léa'])
+    const first = await finishParty(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))
+    // Simulate a lost event: delete it.
+    db.tables[T.events] = db.rows(T.events).filter((e) => e.fields[F.events.action] !== 'partie_terminee')
+    const again = await finishParty(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))
+    expect(again.status).toBe('terminée')
+    expect(again.finishedAt).toBe(first.finishedAt)
+    expect(actions().filter((a) => a === 'partie_terminee')).toHaveLength(1)
+    await finishParty(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))
+    expect(actions().filter((a) => a === 'partie_terminee')).toHaveLength(1)
+  })
+
+  it('I2: status, finish date and highlight are written in a single party update', async () => {
+    const p = await newAzul(['Benny', 'Léa'])
+    const writes: Record<string, unknown>[] = []
+    const update = db.update.bind(db)
+    db.update = async (table, rows) => {
+      if (table === T.parties) writes.push(...rows.map((r) => r.fields))
+      return update(table, rows)
+    }
+    await finishParty(db, 'dev-me', p.id, sheet(p, { Benny: [41], Léa: [47] }))
+    const withStatus = writes.filter((w) => F.parties.status in w)
+    expect(withStatus).toHaveLength(1)
+    expect(withStatus[0]).toMatchObject({ [F.parties.status]: 'terminée', [F.parties.highlight]: 'Victoire de Léa avec 47 points, 6 de plus que Benny' })
+    expect(withStatus[0]![F.parties.finishedAt]).toBeTruthy()
+  })
+
+  it('I3: a retried creation right after returns the same party without a second partie_creee', async () => {
+    const a = await newAzul(['Benny', 'Léa'])
+    const b = await newAzul(['Benny', 'Léa'])
+    expect(b.id).toBe(a.id)
+    expect(db.rows(T.parties)).toHaveLength(1)
+    expect(actions().filter((x) => x === 'partie_creee')).toHaveLength(1)
+  })
+
+  it('I3: a different game or player list still creates a new party', async () => {
+    const a = await newAzul(['Benny', 'Léa'])
+    const b = await newAzul(['Benny', 'Max'])
+    expect(b.id).not.toBe(a.id)
+  })
+
+  it('I3: an orphan party without participations is completed on retry', async () => {
+    const a = await newAzul(['Benny', 'Léa'])
+    for (const id of a.players.map((x) => x.participationId)) db.tables[T.participations] = db.rows(T.participations).filter((r) => r.id !== id)
+    db.find(T.parties, a.id).fields[F.parties.participations] = []
+    db.tables[T.events] = []
+    const b = await newAzul(['Benny', 'Léa'])
+    expect(b.id).toBe(a.id)
+    expect(b.players.map((x) => x.name)).toEqual(['Benny', 'Léa'])
+    expect(actions()).toEqual(['partie_creee'])
+  })
+
+  it('I1: listParties returns ongoing and finished parties in one call', async () => {
+    const a = await newAzul(['Benny', 'Léa'])
+    const b = await newAzul(['Benny', 'Max'])
+    await finishParty(db, 'dev-me', b.id, sheet(b, { Benny: [3], Max: [5] }))
+    const all = await listParties(db, 'dev-me')
+    expect(all.map((x) => [x.id, x.status]).sort()).toEqual([[a.id, 'en cours'], [b.id, 'terminée']].sort())
   })
 })

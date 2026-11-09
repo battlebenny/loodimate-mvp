@@ -21,9 +21,13 @@ function chunk<T>(items: T[], size: number): T[][] {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+// Airtable allows 5 requests per second per base and penalises a 429 for ~30 s: stay under the limit.
+const MIN_GAP_MS = 200
+const BACKOFF_MS = [1500, 4000]
 
 export class AirtableClient {
   private readonly fetchImpl: typeof fetch
+  private nextSlot = 0
 
   constructor(
     private readonly env: Env,
@@ -34,14 +38,17 @@ export class AirtableClient {
 
   private async call<T>(url: string, init: RequestInit = {}): Promise<T> {
     const headers = { Authorization: `Bearer ${this.env.AIRTABLE_API_TOKEN}`, 'Content-Type': 'application/json' }
-    for (let attempt = 0; attempt < 2; attempt++) {
+    for (let attempt = 0; attempt <= BACKOFF_MS.length; attempt++) {
+      const now = Date.now()
+      const wait = this.nextSlot - now
+      this.nextSlot = Math.max(now, this.nextSlot) + MIN_GAP_MS
+      if (wait > 0) await sleep(wait)
       const res = await this.fetchImpl(url, { ...init, headers })
       if (res.status === 429) {
-        if (attempt === 0) {
-          await sleep(1000)
-          continue
-        }
-        throw new HttpError(503, 'busy', 'Le service est très demandé, réessaie dans un instant.')
+        const backoff = BACKOFF_MS[attempt]
+        if (backoff === undefined) break
+        await sleep(backoff)
+        continue
       }
       if (!res.ok) {
         console.error('[airtable]', res.status, await res.text().catch(() => ''))

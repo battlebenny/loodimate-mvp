@@ -174,7 +174,7 @@ export function SheetPage() {
                 type="button"
                 aria-label="Retirer une manche"
                 disabled={sheet.rounds <= 1}
-                onClick={() => update(resizeRounds(sheet, sheet.rounds - 1), true)}
+                onClick={() => update(resizeRounds(sheet, sheet.rounds - 1))}
                 className="size-11 rounded-xl border border-line bg-surface text-xl font-semibold disabled:text-ink-soft/50"
               >
                 −
@@ -182,7 +182,7 @@ export function SheetPage() {
               <span className="min-w-6 text-center text-lg font-bold tabular-nums" aria-live="polite">
                 {sheet.rounds}
               </span>
-              <button type="button" aria-label="Ajouter une manche" onClick={() => update(resizeRounds(sheet, sheet.rounds + 1), true)} className="size-11 rounded-xl border border-line bg-surface text-xl font-semibold">
+              <button type="button" aria-label="Ajouter une manche" onClick={() => update(resizeRounds(sheet, sheet.rounds + 1))} className="size-11 rounded-xl border border-line bg-surface text-xl font-semibold">
                 +
               </button>
             </div>
