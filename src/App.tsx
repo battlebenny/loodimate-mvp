@@ -10,7 +10,8 @@ import { HomePage } from './features/home/HomePage'
 import { StatsPage } from './features/stats/StatsPage'
 import { PlayerContext } from './app/PlayerContext'
 import { api, ApiError } from './lib/api'
-import { clearPlayer, getDeviceId, getPlayer, setIdentity } from './lib/device'
+import { clearPlayer, getDeviceId, getPlayer, setDeviceId, setIdentity } from './lib/device'
+import { readDemoDevice } from './lib/demo'
 import type { PlayerDTO } from '../shared/types'
 
 type Gate = { state: 'loading' } | { state: 'welcome' } | { state: 'ready'; player: PlayerDTO }
@@ -21,6 +22,14 @@ function Placeholder({ title, hideNav }: { title: string; hideNav?: boolean }) {
       <h1 className="font-display text-[26px] font-semibold">{title}</h1>
     </AppShell>
   )
+}
+
+// Demo switch, applied once before the first render (see docs/demo.md).
+const demoDevice = readDemoDevice(window.location.search)
+if (demoDevice) {
+  setDeviceId(demoDevice)
+  clearPlayer()
+  window.history.replaceState(null, '', window.location.pathname)
 }
 
 function OnboardedApp() {

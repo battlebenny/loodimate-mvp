@@ -1,0 +1,60 @@
+{
+ "_comment": "Demo dataset of 2026-11-09 (docs/demo.md). Purge after the 16 November demo with scripts/purge-demo.mjs.",
+ "players": [
+  "recp30RqC31I2Oe2h",
+  "receOnxwPnUBgNGvO",
+  "recEfxOVkUVBxQbjm",
+  "reczMvD6g84rcpPX7"
+ ],
+ "games": [
+  "rec8BmHSlP57M4nci",
+  "rectkD8S7uZoax51j",
+  "recT6bXG2xCtCAUXD"
+ ],
+ "parties": [
+  "rec6ruINamWOmd0Yp",
+  "recskmVjBTI4B2SoJ",
+  "recT9U9eUGLIIjyai",
+  "recLh1ye3N3khN1c0",
+  "recIXvonvyHccEr22",
+  "recf962WsZgnRmX5W",
+  "rec5Sf7t7ErTpPPoo",
+  "recENBKKmVvkWd0in",
+  "recOeh6mcEZzHCtBd",
+  "recsXumrCRLZACNNs",
+  "recDcHtcJ1QYdv1kg",
+  "rec3xXF6SSkgvmS4s",
+  "recTY11zA5TbZeL5h",
+  "rec7Uz8c7hAiNm4Zs",
+  "recedGchh2b2zwr1K",
+  "recNRFw4GnRruOzAD",
+  "recqztYIQi0UJi5vW",
+  "recueajiMCVpi7cbQ",
+  "reccdruQNhDC7EVOl",
+  "recamDLemGzUKItPs"
+ ],
+ "eventIdPrefix": "demo-ev-",
+ "restore": [
+  {
+   "table": "tbluswyc5kjhijKxJ",
+   "id": "rec2rfHvNP12X042F",
+   "fields": {
+    "fldFEjODj2Uk3WsqL": "dev-7f3a91c2"
+   }
+  },
+  {
+   "table": "tblDk3LXpbar0LAB1",
+   "id": "recDbBFmKsiR2bzLc",
+   "fields": {
+    "fldPilY9VREyMrjIQ": null
+   }
+  },
+  {
+   "table": "tblDk3LXpbar0LAB1",
+   "id": "recOqrRRWDrfuRogP",
+   "fields": {
+    "fldPilY9VREyMrjIQ": null
+   }
+  }
+ ]
+}
