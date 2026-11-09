@@ -1,7 +1,7 @@
 import { readJson, HttpError } from '../http.js'
 import type { Route } from '../router.js'
 import { dbFor } from './db.js'
-import { findPlayerByDevice, lookupName, onboard } from '../services/players.js'
+import { findPlayerByDevice, knownNames, lookupName, onboard } from '../services/players.js'
 
 export const playerRoutes: Route[] = [
   {
@@ -28,3 +28,5 @@ export const playerRoutes: Route[] = [
     run: async (ctx) => lookupName(dbFor(ctx), ctx.query.get('name') ?? ''),
   },
 ]
+
+playerRoutes.push({ method: 'GET', pattern: 'players/known', run: async (ctx) => ({ names: await knownNames(dbFor(ctx), ctx.deviceId) }) })

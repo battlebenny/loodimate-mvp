@@ -65,3 +65,22 @@ export async function onboard(db: Db, deviceId: string, firstName: string, mode:
   await recordEvent(db, { action: 'appareil_cree', origin: 'app', visitorId: deviceId, playerId: player.id })
   return player
 }
+
+/** Names already used by this device (players of the parties it created), most frequent first. */
+export async function knownNames(db: Db, deviceId: string | null): Promise<string[]> {
+  const me = await requirePlayer(db, deviceId)
+  const [rec] = await db.getByIds(T.players, [me.id])
+  const parties = await db.getByIds(T.parties, (rec?.fields[F.players.createdParties] as string[] | undefined) ?? [])
+  const parts = await db.getByIds(T.participations, parties.flatMap((p) => (p.fields[F.parties.participations] as string[] | undefined) ?? []))
+  const count = new Map<string, number>()
+  for (const p of parts) {
+    const id = ((p.fields[F.participations.player] as string[] | undefined) ?? [])[0]
+    if (id && id !== me.id) count.set(id, (count.get(id) ?? 0) + 1)
+  }
+  const players = await db.getByIds(T.players, [...count.keys()])
+  return players
+    .map((p) => ({ name: String(p.fields[F.players.name] ?? ''), n: count.get(p.id) ?? 0 }))
+    .filter((p) => p.name)
+    .sort((a, b) => b.n - a.n || a.name.localeCompare(b.name, 'fr'))
+    .map((p) => p.name)
+}

@@ -18,7 +18,8 @@ export type Scores = (number | null)[]
 
 export type PlayerDTO = { id: string; name: string }
 
-export type BggGame = { bggId: number; name: string; year: number | null; image: string | null }
+/** image = full box visual (stored on the game), thumb = small one for lists. */
+export type BggGame = { bggId: number; name: string; year: number | null; image: string | null; thumb: string | null }
 
 export type CreatePartyInput = {
   game: { bggId?: number; name: string; image?: string | null }

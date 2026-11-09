@@ -47,18 +47,19 @@ export async function searchGames(query: string, env: Env, fetchImpl: typeof fet
     const year = m[2]!.match(/<yearpublished\b[^>]*\bvalue="(\d+)"/)?.[1]
     const r = name ? rank(name, fq) : null
     if (r === null) continue
-    found.push({ bggId: Number(m[1]), name, year: year ? Number(year) : null, image: null, r })
+    found.push({ bggId: Number(m[1]), name, year: year ? Number(year) : null, image: null, thumb: null, r })
   }
   const top = found.sort((a, b) => a.r - b.r || a.name.length - b.name.length || (b.year ?? 0) - (a.year ?? 0)).slice(0, 6)
   if (top.length === 0) return []
 
   const thing = await getXml(`${API}/thing?id=${top.map((g) => g.bggId).join(',')}`, env, fetchImpl)
-  const images = new Map<number, string>()
+  const images = new Map<number, { image: string | null; thumb: string | null }>()
   if (thing) {
     for (const m of thing.matchAll(/<item\b[^>]*\bid="(\d+)"[^>]*>([\s\S]*?)<\/item>/g)) {
       const img = m[2]!.match(/<image>\s*([^<]+?)\s*<\/image>/)?.[1]
-      if (img) images.set(Number(m[1]), decode(img))
+      const thumb = m[2]!.match(/<thumbnail>\s*([^<]+?)\s*<\/thumbnail>/)?.[1]
+      images.set(Number(m[1]), { image: img ? decode(img) : null, thumb: thumb ? decode(thumb) : null })
     }
   }
-  return top.map(({ r: _r, ...g }) => ({ ...g, image: images.get(g.bggId) ?? null }))
+  return top.map(({ r: _r, ...g }) => ({ ...g, image: images.get(g.bggId)?.image ?? null, thumb: images.get(g.bggId)?.thumb ?? null }))
 }

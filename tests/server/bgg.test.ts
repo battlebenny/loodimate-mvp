@@ -17,7 +17,7 @@ describe('searchGames', () => {
     const f = fetchWith(fx('bgg-search.xml'), fx('bgg-thing.xml'))
     const out = await searchGames('azul', env, f as unknown as typeof fetch)
     expect(out).toHaveLength(6)
-    expect(out[0]).toEqual({ bggId: 230802, name: 'Azul', year: 2017, image: 'https://cf.geekdo-images.com/azul.jpg' })
+    expect(out[0]).toEqual({ bggId: 230802, name: 'Azul', year: 2017, image: 'https://cf.geekdo-images.com/azul.jpg', thumb: 'https://cf.geekdo-images.com/azul_t.jpg' })
     expect(out.map((g) => g.name)).toContain("Azul : Pavillon d'été")
     expect(out.map((g) => g.name)).not.toContain('Dazul & Co')
     expect(out.find((g) => g.bggId === 1003)!.image).toBe('https://cf.geekdo-images.com/mini.jpg')
@@ -48,6 +48,6 @@ describe('searchGames', () => {
   it('keeps results without images when thing fails', async () => {
     const out = await searchGames('azul', env, fetchWith(fx('bgg-search.xml'), new Response('', { status: 500 })) as unknown as typeof fetch)
     expect(out).toHaveLength(6)
-    expect(out.every((g) => g.image === null)).toBe(true)
+    expect(out.every((g) => g.image === null && g.thumb === null)).toBe(true)
   })
 })

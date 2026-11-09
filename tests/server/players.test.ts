@@ -105,3 +105,20 @@ describe('recordEvent', () => {
     expect(events()).toHaveLength(1)
   })
 })
+
+describe('knownNames', () => {
+  it('lists players from parties created by the device, most frequent first, without me nor duplicates', async () => {
+    const { knownNames } = await import('../../server/core/services/players.js')
+    const me = db.seed(T.players, { [F.players.name]: 'Benny', [F.players.device]: 'dev-me' })
+    const other = db.seed(T.players, { [F.players.name]: 'Zoé', [F.players.device]: 'dev-z' })
+    const [lea, max, ines] = ['Léa', 'Max', 'Inès'].map((n) => db.seed(T.players, { [F.players.name]: n }))
+    const party = (creator: string, players: string[]) => {
+      const p = db.seed(T.parties, { [F.parties.creator]: [creator] })
+      for (const pl of players) db.seed(T.participations, { [F.participations.party]: [p.id], [F.participations.player]: [pl] })
+    }
+    party(me.id, [me.id, lea!.id, max!.id])
+    party(me.id, [me.id, max!.id])
+    party(other.id, [other.id, ines!.id])
+    expect(await knownNames(db, 'dev-me')).toEqual(['Max', 'Léa'])
+  })
+})
