@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { WelcomePage } from './features/onboarding/WelcomePage'
+import { InstallPage } from './features/install/InstallPage'
+import { currentInstallContext, isInstallSkipped, skipInstall } from './lib/platform'
 import { AppShell } from './components/shell/AppShell'
 import { NewPartyPage } from './features/new-party/NewPartyPage'
 import { SheetPage } from './features/sheet/SheetPage'
@@ -39,6 +41,12 @@ function OnboardedApp() {
     return { state: getDeviceId() ? 'loading' : 'welcome' }
   })
 
+  // Phones and tablets are invited to install the app before onboarding; desktop goes straight on.
+  const [needsInstall, setNeedsInstall] = useState(() => {
+    const context = currentInstallContext()
+    return context === 'desktop' || context === 'installed' || isInstallSkipped() ? null : context
+  })
+
   useEffect(() => {
     const device = getDeviceId()
     if (!device) return
@@ -58,6 +66,13 @@ function OnboardedApp() {
   }, [])
 
   if (gate.state === 'loading') return null
+  if (gate.state === 'welcome' && needsInstall) {
+    const onSkip = () => {
+      skipInstall()
+      setNeedsInstall(null)
+    }
+    return <InstallPage context={needsInstall} onSkip={onSkip} />
+  }
   if (gate.state === 'welcome') return <WelcomePage onDone={(player) => setGate({ state: 'ready', player })} />
   return (
     <PlayerContext.Provider value={gate.player}>
