@@ -11,3 +11,7 @@ dist/
 
 # Système
 .DS_Store
+
+# Local wireframe snapshot (source of truth: claude.ai canvas)
+.wireframes/
+.superpowers/
