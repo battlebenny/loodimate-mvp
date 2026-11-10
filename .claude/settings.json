@@ -10,7 +10,8 @@
     ],
     "deny": [
       "Read(./.env)",
-      "Read(./.env.*)"
+      "Read(./.env.*)",
+      "Read(/Users/bgermain/Library/CloudStorage/SynologyDrive-battle_benny/Obsidian/battle_benny/Projets/Loodi-mate/Formation Jedha/Mémo n8n.md)"
     ]
   }
 }
