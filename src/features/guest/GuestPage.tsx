@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { MiniHeader } from '../../components/shell/MiniHeader'
 import '../../components/shell/shell.css'
 import { api } from '../../lib/api'
+import { getLinkVisitorId } from '../../lib/device'
 import { track } from '../../lib/track'
 import { SouvenirView } from '../souvenir/SouvenirView'
 import type { PartyDTO } from '../../../shared/types'
@@ -27,7 +28,7 @@ export function GuestPage() {
         setParty(p)
         if (!opened.current) {
           opened.current = true
-          track('souvenir_ouvert', { origin: 'lien', partyId: p.id })
+          track('souvenir_ouvert', { origin: 'lien', partyId: p.id, visitorId: getLinkVisitorId() })
         }
       })
       .catch((e) => setError(e instanceof Error ? e.message : 'Ce souvenir n’existe pas ou plus.'))

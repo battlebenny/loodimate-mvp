@@ -68,3 +68,13 @@ export function getVisitorId(): string {
   write(VISITOR, id)
   return id
 }
+
+/**
+ * Visitor id for the shared souvenir view: a Loodi-mate device id found in this browser wins
+ * (the server then links the event to its player), so an onboarded player opening the link
+ * in the same browser as the app is not counted as a separate visitor. Otherwise anonymous id.
+ * Known limit: an installed iOS PWA does not share storage with Safari.
+ */
+export function getLinkVisitorId(): string {
+  return getDeviceId() ?? getVisitorId()
+}

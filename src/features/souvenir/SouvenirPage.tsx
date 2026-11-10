@@ -15,18 +15,12 @@ export function SouvenirPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const state = location.state as { party?: PartyDTO; from?: string } | null
+  const state = location.state as { party?: PartyDTO } | null
   const [party, setParty] = useState<PartyDTO | null>(state?.party?.id === id ? state.party : null)
   const [error, setError] = useState<string>()
   const [sheet, setSheet] = useState<'edit' | 'highlight' | 'share' | null>(null)
-  const tracked = useRef(false)
-
-  useEffect(() => {
-    if (state?.from === 'home' && !tracked.current) {
-      tracked.current = true
-      track('souvenir_ouvert', { origin: 'app', partyId: id })
-    }
-  }, [id, state?.from])
+  // Party id already counted for this display: guards re-renders (souvenir edits) and the StrictMode double effect.
+  const tracked = useRef<string | null>(null)
 
   useEffect(() => {
     if (party) return
@@ -34,6 +28,15 @@ export function SouvenirPage() {
       .then(setParty)
       .catch((e) => setError(e instanceof Error ? e.message : 'Souvenir introuvable.'))
   }, [id, party])
+
+  // One souvenir_ouvert per display, once the finished party is shown: right after "Terminer"
+  // (the first opening) and from Home > finished parties. An ongoing party redirects to its sheet instead.
+  const shownId = party?.status === 'terminée' ? party.id : null
+  useEffect(() => {
+    if (!shownId || tracked.current === shownId) return
+    tracked.current = shownId
+    track('souvenir_ouvert', { origin: 'app', partyId: shownId })
+  }, [shownId])
 
   const photos = usePhotoUpload(id, setParty)
 

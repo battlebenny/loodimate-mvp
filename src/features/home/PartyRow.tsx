@@ -24,7 +24,6 @@ export function PartyRow({ party }: { party: PartySummaryDTO }) {
     <li>
       <Link
         to={ongoing ? `/partie/${party.id}/feuille` : `/partie/${party.id}`}
-        state={ongoing ? undefined : { from: 'home' }}
         className={`flex min-h-16 items-center gap-3 rounded-[14px] border bg-surface px-4 py-3 text-ink no-underline hover:border-ink-soft ${ongoing ? 'border-[1.5px] border-accent' : 'border-line'}`}
       >
         <GameThumb src={party.firstPhotoThumb ?? party.game.image} size={40} />
