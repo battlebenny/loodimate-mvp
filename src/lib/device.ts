@@ -68,13 +68,3 @@ export function getVisitorId(): string {
   write(VISITOR, id)
   return id
 }
-
-export function isStandalone(): boolean {
-  return window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true
-}
-
-export function isIosSafariNotInstalled(): boolean {
-  const ua = navigator.userAgent
-  const ios = /iPhone|iPad|iPod/.test(ua) || (ua.includes('Macintosh') && navigator.maxTouchPoints > 1)
-  return ios && !isStandalone()
-}

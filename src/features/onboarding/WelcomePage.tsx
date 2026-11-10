@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '../../components/ui/Button'
 import { TextField } from '../../components/ui/TextField'
-import { Logo } from '../../components/ui/Logo'
+import { BrandLockup } from '../../components/shell/BrandLockup'
 import { api, ApiError } from '../../lib/api'
-import { ensureDeviceId, isIosSafariNotInstalled, setIdentity } from '../../lib/device'
+import { ensureDeviceId, setIdentity } from '../../lib/device'
 import type { PlayerDTO } from '../../../shared/types'
 
 type Conflict = { code: 'claimable' | 'taken'; name: string } | null
@@ -13,7 +13,6 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string>()
   const [conflict, setConflict] = useState<Conflict>(null)
-  const [installHint, setInstallHint] = useState(isIosSafariNotInstalled())
 
   async function submit(mode: 'new' | 'claim' | 'link') {
     const deviceId = ensureDeviceId()
@@ -45,22 +44,7 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[560px] flex-col px-6 pt-[calc(32px+var(--safe-top))] pb-[calc(32px+var(--safe-bottom))]">
       <div className="flex flex-1 flex-col justify-center gap-7">
-        <div className="flex items-center gap-3">
-          <Logo size={56} />
-          <span className="font-display text-2xl font-semibold">Loodi-mate</span>
-        </div>
-
-        {installHint && (
-          <div className="flex flex-col gap-2 rounded-[18px] border border-line bg-surface p-4">
-            <p className="m-0 font-semibold">Installe Loodi-mate sur ton écran d'accueil</p>
-            <p className="m-0 text-sm text-ink-soft">
-              Touche <span aria-label="Partager">Partager</span> puis « Sur l'écran d'accueil », et ouvre l'app depuis son icône : tes parties y seront gardées.
-            </p>
-            <button type="button" className="self-start text-sm font-semibold text-accent underline-offset-2 hover:underline min-h-[44px]" onClick={() => setInstallHint(false)}>
-              Continuer dans Safari
-            </button>
-          </div>
-        )}
+        <BrandLockup scale={1.5} />
 
         <div className="flex flex-col gap-2.5">
           <h1 className="m-0 font-display text-[30px] leading-tight font-semibold">Garde la trace de vos parties</h1>

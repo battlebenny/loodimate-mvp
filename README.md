@@ -21,10 +21,11 @@ C'est le MVP de fin de formation **Jedha Product Builder**. La démo a lieu le 1
 5. **Parties** : la liste des parties en cours et terminées.
 6. **Stats** : parties jouées, victoires, records et moyennes par jeu, victoires par joueur.
 
-**Installer l'app sur son téléphone** :
+**Installer l'app sur son téléphone** : au premier lancement sur téléphone ou tablette, un écran guide l'installation avant l'onboarding. Sur ordinateur, l'onboarding s'affiche directement.
 
-- Sur iPhone : dans Safari, Partager puis « Sur l'écran d'accueil ».
-- Sur Android : dans Chrome, menu puis « Installer l'application ».
+- Sur iPhone : Partager puis « Sur l'écran d'accueil ».
+- Sur Android : bouton « Installer Mate », ou menu ⋮ puis « Installer l'application ».
+- Ouvre le lien dans Safari ou Chrome : les navigateurs intégrés de WhatsApp, Instagram ou Messenger ne permettent pas d'installer l'app.
 
 Sur iPhone, l'app installée ne partage pas les données de Safari. Ressaisis ton prénom et réponds « Oui, c'est moi ».
 
