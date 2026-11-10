@@ -20,36 +20,48 @@
   transition: opacity 150ms ease-out;
   pointer-events: none;
 }
-.mate-header__slot { position: relative; display: flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; }
 .mate-header__back {
   display: inline-flex; width: 44px; height: 44px; margin: -4px; align-items: center; justify-content: center;
   border: 0; border-radius: var(--radius-pill); background: transparent; color: inherit; cursor: pointer;
   transition: transform 150ms ease-out;
 }
 .mate-header__back:active { transform: scale(.9); }
-.mate-header__wordmark { position: relative; display: block; height: 20px; width: auto; }
-.mate-header__wordmark--dark { display: none; }
-.mate-header__tile {
+
+/* Brand lockup (logo, wordmark, "Mate" tile), shared by the header and onboarding. */
+.mate-brand {
+  --s: var(--brand-scale, 1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing-sm) * var(--s));
+}
+.mate-brand__slot {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: calc(36px * var(--s)); height: calc(36px * var(--s)); flex: 0 0 auto;
+}
+.mate-brand__wordmark { position: relative; display: block; height: calc(20px * var(--s)); width: auto; }
+.mate-brand__wordmark--dark { display: none; }
+.mate-brand__tile {
   position: relative;
   display: inline-flex;
-  height: 22px;
+  height: calc(22px * var(--s));
   align-items: center;
   box-sizing: border-box;
-  padding-inline: 8px;
+  padding-inline: calc(8px * var(--s));
   border: 1px solid color-mix(in srgb, var(--color-brand-accent) 70%, var(--color-brand-primary));
-  border-radius: 8px;
+  border-radius: calc(8px * var(--s));
   background: var(--color-brand-accent);
   color: var(--color-brand-link);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--color-brand-accent) 65%, var(--color-brand-primary));
   font: var(--typography-display);
-  font-size: .8125rem;
+  font-size: calc(.8125rem * var(--s));
   line-height: 1;
   transform: perspective(160px) rotateX(4deg) rotateZ(-5.5deg);
 }
 :where(.dark) .mate-header { color: var(--color-text-primary-dark); }
 :where(.dark) .mate-header__glass { border-color: var(--color-border-subtle-dark); background: var(--color-surface-glass-dark); }
-:where(.dark) .mate-header__wordmark--light { display: none; }
-:where(.dark) .mate-header__wordmark--dark { display: block; }
+:where(.dark) .mate-brand__wordmark--light { display: none; }
+:where(.dark) .mate-brand__wordmark--dark { display: block; }
 
 .mate-nav {
   position: fixed;
