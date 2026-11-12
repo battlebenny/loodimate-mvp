@@ -54,10 +54,10 @@ export function PhotoButton({ count, busy, onPick }: { count: number; busy: bool
       disabled={full || busy}
       aria-label={full ? 'Photos : 3 sur 3' : `Prendre une photo, ${count} sur 3`}
       aria-busy={busy || undefined}
-      className="relative flex size-[52px] shrink-0 items-center justify-center rounded-[14px] border-[1.5px] border-ink bg-surface text-ink disabled:border-line disabled:text-ink-soft"
+      className="relative flex size-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] border border-surface-subtle bg-surface text-ink transition-colors hover:bg-surface-subtle disabled:text-ink-soft"
     >
       {busy ? <span className="size-5 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <CameraIcon />}
-      {count > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1 text-[11px] font-bold text-bg">{count}</span>}
+      {count > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent-strong px-1 text-[11px] font-bold text-white">{count}</span>}
     </button>
   )
 }

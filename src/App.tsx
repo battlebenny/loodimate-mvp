@@ -21,7 +21,7 @@ type Gate = { state: 'loading' } | { state: 'welcome' } | { state: 'ready'; play
 function Placeholder({ title, hideNav }: { title: string; hideNav?: boolean }) {
   return (
     <AppShell hideNav={hideNav} back={hideNav}>
-      <h1 className="font-display text-[26px] font-semibold">{title}</h1>
+      <h1 className="page-title">{title}</h1>
     </AppShell>
   )
 }

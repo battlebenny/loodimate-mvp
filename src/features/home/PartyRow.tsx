@@ -24,7 +24,7 @@ export function PartyRow({ party }: { party: PartySummaryDTO }) {
     <li>
       <Link
         to={ongoing ? `/partie/${party.id}/feuille` : `/partie/${party.id}`}
-        className={`flex min-h-16 items-center gap-3 rounded-[14px] border bg-surface px-4 py-3 text-ink no-underline hover:border-ink-soft ${ongoing ? 'border-[1.5px] border-accent' : 'border-line'}`}
+        className={`flex min-h-16 items-center gap-3 rounded-card border px-4 py-3 text-ink no-underline ${ongoing ? 'border-accent/30 bg-accent-soft' : 'border-line hover:bg-surface-subtle'}`}
       >
         <GameThumb src={party.firstPhotoThumb ?? party.game.image} size={40} />
         <span className="flex min-w-0 grow flex-col gap-0.5">
@@ -32,7 +32,7 @@ export function PartyRow({ party }: { party: PartySummaryDTO }) {
           <span className="text-[13px] text-ink-soft">{ongoing ? ongoingMeta(party) : finishedMeta(party)}</span>
         </span>
         {ongoing ? (
-          <span className="text-sm font-semibold text-accent-strong">Reprendre</span>
+          <span className="text-sm font-semibold text-accent-text">Reprendre</span>
         ) : (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-ink-soft">
             <path d="M9 6l6 6-6 6" />

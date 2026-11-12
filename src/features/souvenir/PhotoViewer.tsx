@@ -23,7 +23,7 @@ export function PhotoViewer({ photos, start, onClose }: { photos: { url: string 
       className="m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-black p-0 text-white"
     >
       <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between px-4 pt-[calc(12px+var(--safe-top))] pb-3">
+        <div className="flex items-center justify-between px-4 pt-[calc(12px+var(--safe-area-inset-top))] pb-3">
           <span className="text-sm">
             {i + 1} / {photos.length}
           </span>
@@ -46,7 +46,7 @@ export function PhotoViewer({ photos, start, onClose }: { photos: { url: string 
           <img src={photos[i]?.url} alt={`Photo ${i + 1}`} className="max-h-full max-w-full object-contain" />
         </div>
         {photos.length > 1 && (
-          <div className="flex justify-between px-4 pt-3 pb-[calc(16px+var(--safe-bottom))]">
+          <div className="flex justify-between px-4 pt-3 pb-[calc(16px+var(--safe-area-inset-bottom))]">
             <button type="button" onClick={() => go(-1)} className="min-h-11 px-3 font-semibold">
               Précédente
             </button>

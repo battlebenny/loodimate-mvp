@@ -18,7 +18,7 @@ export function ConfirmDialog({ open, title, body, confirmLabel, cancelLabel, on
         onCancel()
       }}
       aria-labelledby="confirm-title"
-      className="m-auto w-[min(92vw,420px)] rounded-[20px] border border-line bg-bg p-0 text-ink backdrop:bg-black/45"
+      className="m-auto w-[min(92vw,420px)] rounded-[var(--radius-2xl)] border border-line bg-bg p-0 text-ink backdrop:bg-black/45"
     >
       <div className="flex flex-col gap-3 p-5">
         <h2 id="confirm-title" className="m-0 font-display text-xl font-semibold">

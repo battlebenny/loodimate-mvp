@@ -62,15 +62,15 @@ export function NewPartyPage() {
         </div>
       }
     >
-      <h1 className="m-0 mb-6 font-display text-[26px] font-semibold">Nouvelle partie</h1>
+      <h1 className="m-0 mb-6 page-title">Nouvelle partie</h1>
       <section className="mb-7 flex flex-col gap-2.5" aria-labelledby="np-game">
-        <h2 id="np-game" className="m-0 text-xs font-semibold tracking-[0.06em] text-ink-soft uppercase">
+        <h2 id="np-game" className="m-0 section-label">
           Jeu
         </h2>
         <GamePicker value={game} onChange={setGame} />
       </section>
       <section className="flex flex-col gap-3" aria-labelledby="np-players">
-        <h2 id="np-players" className="m-0 text-xs font-semibold tracking-[0.06em] text-ink-soft uppercase">
+        <h2 id="np-players" className="m-0 section-label">
           Joueurs ({players.length})
         </h2>
         <PlayerPicker players={players} onChange={setPlayers} known={known} />

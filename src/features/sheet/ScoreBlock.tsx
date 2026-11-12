@@ -32,7 +32,7 @@ function ScoreCell({ value, label, onChange, onFocus }: { value: number | null; 
         setText(t)
         onChange(parse(t))
       }}
-      className="h-[46px] min-w-0 flex-1 rounded-[10px] border-[1.5px] border-line bg-surface text-center text-[17px] font-semibold text-ink outline-none focus:border-accent"
+      className="h-[46px] min-w-0 flex-1 rounded-control border border-line bg-surface text-center text-[17px] font-semibold text-ink outline-none focus:border-accent"
     />
   )
 }
@@ -46,7 +46,7 @@ export function ScoreBlock({ name, scores, onChange }: { name: string; scores: S
     onChange(scores.map((v, j) => (j === i && v !== null ? -v : v)))
   }
   return (
-    <div className="flex flex-col gap-1.5 rounded-[14px] border border-line bg-surface px-3 pt-2.5 pb-3">
+    <div className="flex flex-col gap-1.5 rounded-card border border-line bg-surface px-3 pt-2.5 pb-3">
       <div className="flex items-baseline justify-between gap-2">
         <span className="truncate text-[15px] font-semibold">{name}</span>
         <span className="text-lg font-bold tabular-nums" aria-label={`Total de ${name}`}>
@@ -68,7 +68,7 @@ export function ScoreBlock({ name, scores, onChange }: { name: string; scores: S
           onMouseDown={(e) => e.preventDefault()}
           onClick={flip}
           aria-label={`Inverser le signe du dernier score de ${name}`}
-          className="flex h-[46px] w-11 shrink-0 items-center justify-center rounded-[10px] border border-line text-lg font-semibold text-ink-soft hover:bg-surface-subtle"
+          className="flex h-[46px] w-11 shrink-0 items-center justify-center rounded-control border border-line text-lg font-semibold text-ink-soft hover:bg-surface-subtle"
         >
           ±
         </button>

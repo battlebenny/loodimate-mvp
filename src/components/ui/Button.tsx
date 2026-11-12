@@ -3,9 +3,10 @@ import type { ButtonHTMLAttributes } from 'react'
 type Variant = 'primary' | 'secondary' | 'ghost'
 
 const styles: Record<Variant, string> = {
-  primary: 'bg-accent-strong text-white hover:brightness-95 active:brightness-90',
-  secondary: 'bg-surface text-ink border border-line hover:bg-surface-subtle',
-  ghost: 'bg-transparent text-ink hover:bg-surface-subtle',
+  // Same recipe as Loodi-collec's Button, with Mate's module accent instead of the brand orange.
+  primary: 'bg-accent-strong text-white hover:bg-accent-hover active:bg-accent-hover',
+  secondary: 'border border-surface-subtle bg-surface text-ink hover:bg-surface-subtle active:bg-surface-subtle',
+  ghost: 'text-ink-soft hover:bg-surface-subtle hover:text-ink active:bg-surface-subtle active:text-ink',
 }
 
 export function Button({ variant = 'primary', className = '', busy, children, disabled, ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; busy?: boolean }) {
@@ -15,7 +16,7 @@ export function Button({ variant = 'primary', className = '', busy, children, di
       {...rest}
       disabled={disabled || busy}
       aria-busy={busy || undefined}
-      className={`inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[14px] px-5 font-semibold transition disabled:cursor-not-allowed disabled:opacity-45 ${styles[variant]} ${className}`}
+      className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-[var(--radius-lg)] px-6 text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:cursor-not-allowed disabled:opacity-50 ${styles[variant]} ${className}`}
     >
       {children}
     </button>

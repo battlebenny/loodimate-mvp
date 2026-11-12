@@ -14,7 +14,7 @@ function Steps({ children }: { children: ReactNode }) {
 
 function Step({ n, children }: { n: number; children: ReactNode }) {
   return (
-    <li className="flex items-start gap-3 rounded-[14px] bg-surface p-3.5">
+    <li className="flex items-start gap-3 rounded-card bg-surface p-3.5">
       <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full bg-accent-strong text-sm font-semibold text-white" aria-hidden="true">
         {n}
       </span>
@@ -68,12 +68,12 @@ export function InstallPage({ context, onSkip }: Props) {
       : 'Il s’ouvrira comme une app depuis ton écran d’accueil, et tes parties y seront gardées.'
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-[560px] flex-col px-6 pt-[calc(32px+var(--safe-top))] pb-[calc(32px+var(--safe-bottom))]">
+    <main className="mx-auto flex min-h-dvh w-full max-w-[560px] flex-col px-6 pt-[calc(32px+var(--safe-area-inset-top))] pb-[calc(32px+var(--safe-area-inset-bottom))]">
       <div className="flex flex-1 flex-col justify-center gap-7">
         <BrandLockup scale={1.5} />
 
         <div className="flex flex-col gap-2.5">
-          <h1 className="m-0 font-display text-[30px] leading-tight font-semibold">{title}</h1>
+          <h1 className="m-0 page-title">{title}</h1>
           <p className="m-0 text-base text-ink-soft">{intro}</p>
         </div>
 
@@ -105,7 +105,7 @@ export function InstallPage({ context, onSkip }: Props) {
         )}
 
         {!installed && context === 'android' && prompt && (
-          <p className="m-0 rounded-[14px] bg-surface p-3.5 leading-snug">Un appui suffit : ton navigateur ajoute l’icône Mate à ton écran d’accueil.</p>
+          <p className="m-0 rounded-card bg-surface p-3.5 leading-snug">Un appui suffit : ton navigateur ajoute l’icône Mate à ton écran d’accueil.</p>
         )}
 
         {inApp && (
@@ -132,7 +132,7 @@ export function InstallPage({ context, onSkip }: Props) {
             {copied ? 'Lien copié' : 'Copier le lien'}
           </Button>
         )}
-        <button type="button" className="min-h-[44px] text-sm font-semibold text-accent underline-offset-2 hover:underline" onClick={onSkip}>
+        <button type="button" className="min-h-[44px] text-sm font-semibold text-accent-text underline-offset-2 hover:underline" onClick={onSkip}>
           {inApp ? 'Continuer ici quand même' : 'Continuer dans le navigateur'}
         </button>
       </div>

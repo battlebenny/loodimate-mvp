@@ -1,3 +1,4 @@
+import { Plus } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Button } from '../../components/ui/Button'
 import { api } from '../../lib/api'
@@ -49,13 +50,13 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
     <div className="flex flex-col gap-3">
       <ul className="m-0 flex list-none flex-wrap gap-2 p-0" aria-label="Joueurs de la partie">
         {players.map((p, i) => (
-          <li key={`${p.name}-${i}`} className="inline-flex min-h-10 items-center gap-1 rounded-full bg-ink py-0 pr-1 pl-3.5 text-[15px] font-medium text-bg">
+          <li key={`${p.name}-${i}`} className="inline-flex min-h-10 items-center gap-1 rounded-full border border-accent bg-accent/15 py-0 pr-1 pl-3.5 text-[15px] font-medium text-accent-text">
             {p.name}
             <button
               type="button"
               aria-label={`Retirer ${p.name}`}
               onClick={() => onChange(players.filter((_, j) => j !== i))}
-              className="flex size-8 items-center justify-center rounded-full hover:bg-white/15"
+              className="flex size-8 items-center justify-center rounded-full hover:bg-accent/15"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
                 <path d="M6 6l12 12M18 6L6 18" />
@@ -66,7 +67,7 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
       </ul>
 
       {confirm ? (
-        <div className="flex flex-col gap-2 rounded-[18px] border border-line bg-surface p-4" role="group" aria-label="Confirmer le joueur">
+        <div className="flex flex-col gap-2 rounded-card border border-line bg-surface p-4" role="group" aria-label="Confirmer le joueur">
           <p className="m-0 font-semibold">{confirm.name} joue déjà sur Mate.</p>
           <p className="m-0 text-sm text-ink-soft">C’est la même personne ?</p>
           <div className="flex gap-2">
@@ -92,7 +93,7 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
             placeholder="Ex. Léa"
             onChange={(e) => setInput(e.target.value)}
             aria-describedby={hint ? 'player-hint' : undefined}
-            className="h-[52px] min-w-0 grow rounded-[var(--radius-control)] border-[1.5px] border-line bg-surface px-4 text-base text-ink outline-none focus:border-accent"
+            className="h-12 min-w-0 grow rounded-control border border-line bg-surface px-4 text-base text-ink outline-none focus:border-accent"
           />
           <Button type="submit" variant="secondary" busy={checking} disabled={!input.trim()}>
             Ajouter
@@ -109,8 +110,9 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[13px] text-ink-soft">Habitués :</span>
           {suggestions.map((n) => (
-            <button key={n} type="button" onClick={() => add({ name: n })} className="inline-flex min-h-10 items-center rounded-full border-[1.5px] border-dashed border-ink-soft px-3.5 text-[15px] hover:bg-surface-subtle">
-              + {n}
+            <button key={n} type="button" onClick={() => add({ name: n })} className="inline-flex min-h-10 items-center gap-1 rounded-full border border-transparent bg-surface-subtle px-3.5 text-[15px] text-ink-soft hover:border-accent/50">
+              <Plus size={14} strokeWidth={2} aria-hidden="true" />
+              {n}
             </button>
           ))}
         </div>

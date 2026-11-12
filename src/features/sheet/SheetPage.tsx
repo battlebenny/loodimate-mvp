@@ -131,7 +131,7 @@ export function SheetPage() {
           {party.photos.length > 0 && (
             <div className="flex gap-2" aria-label="Photos de la partie">
               {party.photos.map((ph, i) => (
-                <img key={ph.url} src={ph.thumbUrl} alt={`Photo ${i + 1}`} className="size-[52px] rounded-[10px] object-cover" />
+                <img key={ph.url} src={ph.thumbUrl} alt={`Photo ${i + 1}`} className="size-12 rounded-control object-cover" />
               ))}
             </div>
           )}
@@ -146,18 +146,18 @@ export function SheetPage() {
     >
       {photos.element}
       <div className="mb-3 flex flex-col">
-        <h1 className="m-0 font-display text-[26px] leading-tight font-semibold">{party.game.name}</h1>
+        <h1 className="m-0 page-title">{party.game.name}</h1>
         <span className="text-[13px] text-ink-soft">Sauvegarde automatique</span>
       </div>
 
-      <div className="flex gap-1 rounded-xl bg-surface-subtle p-1" role="group" aria-label="Type de feuille">
+      <div className="flex gap-1 rounded-control bg-surface-subtle p-1" role="group" aria-label="Type de feuille">
         {(['scores par manche', 'vainqueur seulement'] as Template[]).map((t) => (
           <button
             key={t}
             type="button"
             aria-pressed={sheet.template === t}
             onClick={() => setTemplate(t)}
-            className={`min-h-11 flex-1 rounded-[9px] text-sm font-semibold ${sheet.template === t ? 'bg-surface text-ink shadow-sm' : 'text-ink-soft'}`}
+            className={`min-h-11 flex-1 rounded-[calc(var(--radius-lg)-4px)] text-sm font-semibold ${sheet.template === t ? 'bg-surface text-ink shadow-sm' : 'text-ink-soft'}`}
           >
             {t === 'scores par manche' ? 'Scores par manche' : 'Vainqueur seulement'}
           </button>
@@ -175,14 +175,14 @@ export function SheetPage() {
                 aria-label="Retirer une manche"
                 disabled={sheet.rounds <= 1}
                 onClick={() => update(resizeRounds(sheet, sheet.rounds - 1))}
-                className="size-11 rounded-xl border border-line bg-surface text-xl font-semibold disabled:text-ink-soft/50"
+                className="size-11 rounded-control border border-line bg-surface text-xl font-semibold disabled:text-ink-soft/50"
               >
                 −
               </button>
               <span className="min-w-6 text-center text-lg font-bold tabular-nums" aria-live="polite">
                 {sheet.rounds}
               </span>
-              <button type="button" aria-label="Ajouter une manche" onClick={() => update(resizeRounds(sheet, sheet.rounds + 1))} className="size-11 rounded-xl border border-line bg-surface text-xl font-semibold">
+              <button type="button" aria-label="Ajouter une manche" onClick={() => update(resizeRounds(sheet, sheet.rounds + 1))} className="size-11 rounded-control border border-line bg-surface text-xl font-semibold">
                 +
               </button>
             </div>
