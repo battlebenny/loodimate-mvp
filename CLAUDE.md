@@ -30,7 +30,7 @@ Base `appTGUCdqHkz3EEbA`. Utiliser les ID (pas les noms) dans le code. Dates en 
 **Joueurs** `tbluswyc5kjhijKxJ`
 - Prénom `fld89EkONAx3tHxeY` (primaire, unique insensible à la casse) · ID appareil `fldFEjODj2Uk3WsqL` · Onboardé le `flduJ35W19HoqlYjs` (date)
 - Liens inverses : Parties créées `fld6vtyT3bKcHlJ6g` · Participations `fldlItRFp18O7uV7T` · Événements `fldhEnbNjTyS5MW0D`
-- Calculés (KPI, ne pas écrire) : Nb parties créées, Onboardé, Saisisseur, Réutilise, Nb consultations stats, Consulte stats
+- Calculés (KPI, ne pas écrire) : Nb parties créées, Filtre · Onboardé, Filtre · Saisisseur, H1 · Crée 2+ parties, H3 · Nb consultations stats, H3 · Consulte stats 2+ fois
 
 **Jeux** `tblDk3LXpbar0LAB1`
 - Nom `fldAnVODrYejo2dpw` · BGG ID `fldlkTXCAgKHSiLU4` · Visuel (URL) `fldPilY9VREyMrjIQ` · Template `fldU8PkHgWoDNhb64` ("scores par manche" | "vainqueur seulement") · Parties `fld5FCjjQkIpmarGS`
@@ -40,18 +40,18 @@ Base `appTGUCdqHkz3EEbA`. Utiliser les ID (pas les noms) dans le code. Dates en 
 - Créée le `fldvCakGk5g9zX3vx` · Terminée le `flddAOHmIJeGxI5Gc` · Template `fldehUg7djsAAiY9g` (copié du jeu) · Nb manches `fld3Cm14ZUZjv6MF9`
 - Durée de création (s) `fld1czNj5gTVdtfI5` · Fait marquant `fldm563SLgRHEJ4Nq` · Jeton de partage `fldA184ebaPG5OCt7` (aléatoire, 12 car.) · Photos `fldo336tSfRj2gjNX`
 - Liens inverses : Participations `fldUJfNg76i4iN4bv` · Événements `fldsAVnvavI3RWV1f`
-- Calculés : Comptée H1, Terminée
+- Calculés : Filtre · Créée il y a 24 h+, H1 · Terminée
 
 **Participations** `tbl3ceg2pfP2EqirJ`
 - Ref `fldv5gNOFn90Xtz5u` (ex. `azul-2026-11-04 · Benny`) · Partie `fldwqgIYkOWuitIjx` · Joueur `fldcgjuCywGMzvZnZ`
 - Scores `fldb6Tco43rbJv3qC` (JSON, ex. `[8,12,10]`, vide si "vainqueur seulement") · Total `flddk8mqHcmOuDH20` (calculé côté serveur) · Vainqueur `fldubb4LPMPNqYKzu` (case à cocher, stockée explicitement)
-- Calculés : ID appareil (Joueur), Non onboardé
+- Calculés : ID appareil (Joueur), H1 · Participant non onboardé
 
 **Événements** `tblOe6jCZGUYeeauA` (mesure des hypothèses, à émettre fidèlement)
 - ID `fldWnp0mlT1GJhBB3` · ID visiteur `fld0QTk20feR8pkla` · Action `fldaAhR3eM2AQazDR` · Origine `fldPy3TH2KX7OEF75` ("app" | "lien") · Date `fld4INdNyFgepFDBr` · Partie `fldYX3NPtUQKjgtOB` · Joueur `fldUeaM60JMHwL7cr` (événements app : retrouver le joueur via l'ID appareil)
 - Actions : `appareil_cree`, `creation_debut`, `partie_creee`, `partie_terminee`, `lien_partage`, `souvenir_ouvert`, `cta_clic`, `stats_consultees`
 
-Un dashboard "Pilotage hypothèses" (interface Airtable) lit ces tables : ne pas renommer ni supprimer de champs sans le signaler.
+Convention de nommage des champs calculés : "Hx · …" pour les KPI, "Filtre · …" pour les champs de filtrage. Un dashboard "Pilotage hypothèses" (interface Airtable) lit ces tables : ne pas renommer ni supprimer de champs sans le signaler.
 
 ## Conventions
 
