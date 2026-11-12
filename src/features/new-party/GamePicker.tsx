@@ -81,7 +81,7 @@ export function GamePicker({ value, onChange }: { value: PickedGame | null; onCh
             onClick={() => onChange({ name: q, image: null, thumb: null, meta: 'Ajouté à la main' })}
             className="flex min-h-12 w-full items-center justify-between gap-3 border-t border-line px-4 text-left hover:bg-surface-subtle"
           >
-            <span className="font-medium text-accent-strong">Utiliser « {q} »</span>
+            <span className="font-medium text-accent-strong">Utiliser « {q} »</span>
             <span className="text-xs text-ink-soft">sans fiche</span>
           </button>
         )}

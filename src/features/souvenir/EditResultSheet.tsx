@@ -44,8 +44,8 @@ export function EditResultSheet({ party, open, onClose, onSave }: { party: Party
   const toggle = (id: string) => setWinners(winners.includes(id) ? winners.filter((w) => w !== id) : [...winners, id])
 
   return (
-    <Sheet open={open} title={isScore ? 'Corriger le résultat' : 'Qui a gagné ?'} onClose={onClose} closeLabel="Annuler">
-      <p className="m-0 mb-1 text-sm text-ink-soft">{isScore ? 'Coche le vainqueur, ou plusieurs en cas d’égalité. Tu peux aussi corriger un score.' : "Coche plusieurs joueurs en cas d'égalité."}</p>
+    <Sheet open={open} title={isScore ? 'Corriger le résultat' : 'Qui a gagné ?'} onClose={onClose} closeLabel="Annuler">
+      <p className="m-0 mb-1 text-sm text-ink-soft">{isScore ? 'Coche le vainqueur, ou plusieurs en cas d’égalité. Tu peux aussi corriger un score.' : "Coche plusieurs joueurs en cas d’égalité."}</p>
       {open && (
         <div className="flex max-h-[52dvh] flex-col gap-2 overflow-y-auto">
           {party.players.map((p) => {

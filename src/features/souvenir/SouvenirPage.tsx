@@ -64,7 +64,7 @@ export function SouvenirPage() {
         party={party}
         mode="owner"
         topLeft={
-          <button type="button" onClick={() => navigate('/')} aria-label="Retour à l'accueil" className="flex size-11 items-center justify-center rounded-full bg-white/92 text-[#1c1b19] shadow-sm">
+          <button type="button" onClick={() => navigate('/')} aria-label="Retour à l’accueil" className="flex size-11 items-center justify-center rounded-full bg-white/92 text-[#1c1b19] shadow-sm">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M15 18l-6-6 6-6" />
             </svg>

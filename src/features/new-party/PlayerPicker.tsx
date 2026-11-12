@@ -23,7 +23,7 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
   const askInitial = (name: string, why: string) => {
     setConfirm(null)
     setInput(`${name} `)
-    setHint(`${why} Ajoute une initiale, par exemple « ${name} B. ».`)
+    setHint(`${why} Ajoute une initiale, par exemple « ${name} B. ».`)
   }
 
   async function submit(e?: FormEvent) {
@@ -68,12 +68,12 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
       {confirm ? (
         <div className="flex flex-col gap-2 rounded-[18px] border border-line bg-surface p-4" role="group" aria-label="Confirmer le joueur">
           <p className="m-0 font-semibold">{confirm.name} joue déjà sur Mate.</p>
-          <p className="m-0 text-sm text-ink-soft">C’est la même personne ?</p>
+          <p className="m-0 text-sm text-ink-soft">C’est la même personne ?</p>
           <div className="flex gap-2">
             <Button className="grow" onClick={() => add({ name: confirm.name, playerId: confirm.id })}>
               Oui
             </Button>
-            <Button variant="secondary" className="grow" onClick={() => askInitial(confirm.name, `Ce n'est pas ${confirm.name}.`)}>
+            <Button variant="secondary" className="grow" onClick={() => askInitial(confirm.name, `Ce n’est pas ${confirm.name}.`)}>
               Non, une autre
             </Button>
           </div>
@@ -107,7 +107,7 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
 
       {suggestions.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[13px] text-ink-soft">Habitués :</span>
+          <span className="text-[13px] text-ink-soft">Habitués :</span>
           {suggestions.map((n) => (
             <button key={n} type="button" onClick={() => add({ name: n })} className="inline-flex min-h-10 items-center rounded-full border-[1.5px] border-dashed border-ink-soft px-3.5 text-[15px] hover:bg-surface-subtle">
               + {n}

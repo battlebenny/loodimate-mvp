@@ -22,15 +22,15 @@ describe('buildHighlight', () => {
   })
   it('rule 2: personal record beaten', () => {
     const players = [{ id: 'i', name: 'Inès', total: 58 }, { id: 'b', name: 'Benny', total: 40 }]
-    expect(buildHighlight(base({ players, winnerIds: ['i'], previousBestOfWinner: 51 }))).toBe("Nouveau record d'Inès sur Azul : 58 points")
+    expect(buildHighlight(base({ players, winnerIds: ['i'], previousBestOfWinner: 51 }))).toBe("Nouveau record d’Inès sur Azul : 58 points")
   })
   it('rule 2 does not apply without a previous finished game', () => {
     const players = [{ id: 'i', name: 'Inès', total: 58 }, { id: 'b', name: 'Benny', total: 40 }]
-    expect(buildHighlight(base({ players, winnerIds: ['i'], previousBestOfWinner: null }))).toBe("Victoire d'Inès avec 58 points, 18 de plus que Benny")
+    expect(buildHighlight(base({ players, winnerIds: ['i'], previousBestOfWinner: null }))).toBe("Victoire d’Inès avec 58 points, 18 de plus que Benny")
   })
   it('rule 2 does not apply when the record is only equalled', () => {
     const players = [{ id: 'i', name: 'Inès', total: 58 }, { id: 'b', name: 'Benny', total: 40 }]
-    expect(buildHighlight(base({ players, winnerIds: ['i'], previousBestOfWinner: 58 }))).toBe("Victoire d'Inès avec 58 points, 18 de plus que Benny")
+    expect(buildHighlight(base({ players, winnerIds: ['i'], previousBestOfWinner: 58 }))).toBe("Victoire d’Inès avec 58 points, 18 de plus que Benny")
   })
   it('rule 3: gap with the runner-up', () => {
     const players = [{ id: 'b', name: 'Benny', total: 41 }, { id: 'l', name: 'Léa', total: 47 }, { id: 'm', name: 'Max', total: 20 }]
@@ -38,7 +38,7 @@ describe('buildHighlight', () => {
   })
   it('rule 3: elides que before a vowel', () => {
     const players = [{ id: 'i', name: 'Inès', total: 41 }, { id: 'l', name: 'Léa', total: 47 }]
-    expect(buildHighlight(base({ players, winnerIds: ['l'] }))).toBe("Victoire de Léa avec 47 points, 6 de plus qu'Inès")
+    expect(buildHighlight(base({ players, winnerIds: ['l'] }))).toBe("Victoire de Léa avec 47 points, 6 de plus qu’Inès")
   })
   it('rule 3: gap of one', () => {
     const players = [{ id: 'b', name: 'Benny', total: 46 }, { id: 'l', name: 'Léa', total: 47 }]
@@ -50,7 +50,7 @@ describe('buildHighlight', () => {
   })
   it('rule 4: several winners with elision', () => {
     const players = [{ id: 'i', name: 'Inès', total: null }, { id: 'm', name: 'Max', total: null }, { id: 'b', name: 'Benny', total: null }]
-    expect(buildHighlight(base({ template: 'vainqueur seulement', players, winnerIds: ['i', 'm'] }))).toBe("Belle victoire d'Inès et Max")
+    expect(buildHighlight(base({ template: 'vainqueur seulement', players, winnerIds: ['i', 'm'] }))).toBe("Belle victoire d’Inès et Max")
   })
   it('rule 4: single player game', () => {
     const players = [{ id: 'l', name: 'Léa', total: 47 }]
@@ -68,9 +68,9 @@ describe('buildHighlight', () => {
 
 describe('french helpers', () => {
   it('elides de before vowels, accented or not, but not before h', () => {
-    expect(['Inès', 'Élodie', 'Yann', 'Hugo', 'Ôscar', 'benny'].map(withDe)).toEqual(["d'Inès", "d'Élodie", "d'Yann", 'de Hugo', "d'Ôscar", 'de benny'])
+    expect(['Inès', 'Élodie', 'Yann', 'Hugo', 'Ôscar', 'benny'].map(withDe)).toEqual(["d’Inès", "d’Élodie", "d’Yann", 'de Hugo', "d’Ôscar", 'de benny'])
   })
-  it('elides que', () => expect(withQue('Inès')).toBe("qu'Inès"))
+  it('elides que', () => expect(withQue('Inès')).toBe("qu’Inès"))
   it('pluralises points', () => {
     expect([0, 1, -1, 2, 12].map(points)).toEqual(['0 point', '1 point', '-1 point', '2 points', '12 points'])
   })

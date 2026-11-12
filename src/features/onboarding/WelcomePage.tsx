@@ -38,7 +38,7 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
   function addInitial() {
     setConflict(null)
     setName(`${name.trim()} `)
-    setError(`Ajoute une initiale pour te distinguer, par exemple « ${name.trim()} B. ».`)
+    setError(`Ajoute une initiale pour te distinguer, par exemple « ${name.trim()} B. ».`)
   }
 
   return (
@@ -54,12 +54,12 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
         {conflict ? (
           <div className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-4" role="alertdialog" aria-labelledby="conflict-title">
             <p id="conflict-title" className="m-0 font-semibold">
-              {conflict.code === 'claimable' ? `${conflict.name} joue déjà sur Mate. C’est toi ?` : `C'est toi sur un autre appareil ?`}
+              {conflict.code === 'claimable' ? `${conflict.name} joue déjà sur Mate. C’est toi ?` : `C’est toi sur un autre appareil ?`}
             </p>
-            {conflict.code === 'taken' && <p className="m-0 text-sm text-ink-soft">Par exemple après avoir installé l'app sur ton écran d'accueil.</p>}
+            {conflict.code === 'taken' && <p className="m-0 text-sm text-ink-soft">Par exemple après avoir installé l’app sur ton écran d’accueil.</p>}
             <div className="flex flex-col gap-2">
               <Button busy={busy} onClick={() => void submit(conflict.code === 'claimable' ? 'claim' : 'link')}>
-                Oui, c'est moi
+                Oui, c’est moi
               </Button>
               <Button variant="secondary" onClick={addInitial}>
                 Non, ajouter une initiale
@@ -83,7 +83,7 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
       </div>
       {!conflict && (
         <Button type="submit" form="welcome" busy={busy} disabled={!name.trim()} className="w-full">
-          C'est parti
+          C’est parti
         </Button>
       )}
     </main>

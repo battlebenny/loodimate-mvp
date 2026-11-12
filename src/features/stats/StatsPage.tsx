@@ -67,7 +67,7 @@ export function StatsPage() {
           <div className="grid grid-cols-3 gap-2">
             <Tile value={String(stats.parties)} label={stats.parties > 1 ? 'parties' : 'partie'} />
             <Tile value={String(stats.wins)} label={stats.wins > 1 ? 'victoires' : 'victoire'} />
-            <Tile value={`${stats.winRate} %`} label="de victoires" />
+            <Tile value={`${stats.winRate} %`} label="de victoires" />
           </div>
 
           <section className="flex flex-col gap-2.5" aria-labelledby="stats-games">

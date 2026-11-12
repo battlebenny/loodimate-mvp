@@ -52,7 +52,7 @@ export function PhotoButton({ count, busy, onPick }: { count: number; busy: bool
       type="button"
       onClick={onPick}
       disabled={full || busy}
-      aria-label={full ? 'Photos : 3 sur 3' : `Prendre une photo, ${count} sur 3`}
+      aria-label={full ? 'Photos : 3 sur 3' : `Prendre une photo, ${count} sur 3`}
       aria-busy={busy || undefined}
       className="relative flex size-[52px] shrink-0 items-center justify-center rounded-[14px] border-[1.5px] border-ink bg-surface text-ink disabled:border-line disabled:text-ink-soft"
     >

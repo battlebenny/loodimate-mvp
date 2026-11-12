@@ -53,7 +53,7 @@ export function HomePage() {
         </div>
       ) : lists.ongoing.length + lists.finished.length === 0 ? (
         <div className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-5">
-          <p className="m-0 font-display text-xl font-semibold">Aucune partie pour l'instant</p>
+          <p className="m-0 font-display text-xl font-semibold">Aucune partie pour l’instant</p>
           <p className="m-0 text-ink-soft">Choisis un jeu, ajoute les joueurs, et c’est parti.</p>
           <Link to="/nouvelle" className="self-start font-semibold text-accent-strong">
             Nouvelle partie

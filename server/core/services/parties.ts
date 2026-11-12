@@ -147,7 +147,7 @@ export async function createParty(db: Db, deviceId: string | null, input: Create
   if (wanted.length === 0 || wanted.some((p) => !p.name)) throw new HttpError(400, 'bad_request', 'Ajoute au moins un joueur.')
   if (wanted.length > MAX_PLAYERS) throw new HttpError(400, 'bad_request', `${MAX_PLAYERS} joueurs maximum.`)
   if (wanted.some((p, i) => wanted.findIndex((q) => sameName(q.name, p.name)) !== i)) {
-    throw new HttpError(400, 'duplicate_name', 'Deux joueurs ont le même prénom : ajoute une initiale.')
+    throw new HttpError(400, 'duplicate_name', 'Deux joueurs ont le même prénom : ajoute une initiale.')
   }
 
   const meRec = await requirePlayerRecord(db, deviceId)
@@ -280,6 +280,10 @@ export async function previousBestOf(db: Db, playerId: string, gameId: string, c
   return best
 }
 
+// Highlights stored before the French typography pass use ' and plain spaces: compare without them.
+const plainTypography = (s: string | null) => s?.replace(/’/g, "'").replace(/[  ]/g, ' ') ?? null
+const sameTypography = (a: string | null, b: string | null) => plainTypography(a) === plainTypography(b)
+
 async function autoHighlight(db: Db, dto: PartyDTO): Promise<string | null> {
   const players = dto.players.map((p) => ({ id: p.participationId, name: p.name, total: p.total }))
   const winnerIds = dto.players.filter((p) => p.winner).map((p) => p.participationId)
@@ -342,7 +346,7 @@ export async function updateSouvenir(
   }
 
   if (p.scores || p.winners) {
-    const wasAuto = (await autoHighlight(db, before)) === before.highlight
+    const wasAuto = sameTypography(await autoHighlight(db, before), before.highlight)
     const winners = p.winners ? validWinners(b, p.winners) : before.players.filter((x) => x.winner).map((x) => x.participationId)
     const scores = Object.fromEntries(b.parts.map((x) => [x.id, p.scores?.[x.id] ?? parseScores(x.fields[F.participations.scores])]))
     await writeSheet(db, b, { template: before.template, rounds: before.rounds, scores, winners }, winners)

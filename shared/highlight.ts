@@ -29,7 +29,7 @@ export function buildHighlight(i: HighlightInput): string | null {
 
   const winner = winners[0]!
   if (i.previousBestOfWinner !== null && best > i.previousBestOfWinner) {
-    return `Nouveau record ${withDe(winner.name)} sur ${i.gameName} : ${points(best)}`
+    return `Nouveau record ${withDe(winner.name)} sur ${i.gameName} : ${points(best)}`
   }
 
   const others = i.players

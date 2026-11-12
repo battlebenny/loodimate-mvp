@@ -105,7 +105,7 @@ export function InstallPage({ context, onSkip }: Props) {
         )}
 
         {!installed && context === 'android' && prompt && (
-          <p className="m-0 rounded-[14px] bg-surface p-3.5 leading-snug">Un appui suffit : ton navigateur ajoute l’icône Mate à ton écran d’accueil.</p>
+          <p className="m-0 rounded-[14px] bg-surface p-3.5 leading-snug">Un appui suffit : ton navigateur ajoute l’icône Mate à ton écran d’accueil.</p>
         )}
 
         {inApp && (

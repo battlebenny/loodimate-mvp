@@ -39,7 +39,7 @@ export function GuestPage() {
       <>
         <MiniHeader />
         <main className="mx-auto flex min-h-dvh max-w-[560px] flex-col justify-center gap-4 px-6">
-          <h1 className="m-0 font-display text-2xl font-semibold">Ce souvenir n'existe pas ou plus.</h1>
+          <h1 className="m-0 font-display text-2xl font-semibold">Ce souvenir n’existe pas ou plus.</h1>
           <Link to="/" className="font-semibold text-accent-strong">
             Découvrir Loodi-mate
           </Link>
