@@ -1,0 +1,328 @@
+{
+  "name": "Loodi-mate - Rapport KPI hebdo",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblgy5ycSeMQ6JPOZ",
+          "mode": "id"
+        },
+        "options": {},
+        "returnAll": true
+      },
+      "id": "9520e051-a246-468b-9962-4166c7cae894",
+      "name": "Lire Parties",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbluswyc5kjhijKxJ",
+          "mode": "id"
+        },
+        "options": {},
+        "returnAll": true
+      },
+      "id": "23fa5bdf-6a47-46d2-aecd-fea5f1b52a1b",
+      "name": "Lire Joueurs",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        0
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n · nœud Code \"Calculer les KPI\" (Run Once for All Items)\n// Lit les 5 nœuds \"Lire …\" et produit { sujet, html } au style Loodi-mate\n\n// ---------- Données ----------\nconst rows = (name) =>\n  $(name).all().filter((i) => i.json.id).map((i) => i.json.fields ?? i.json);\n\nconst joueurs = rows('Lire Joueurs');\nconst parties = rows('Lire Parties');\nconst participations = rows('Lire Participations');\nconst evenements = rows('Lire Événements');\nconst visiteurs = rows('Lire Visiteurs souvenir');\n\nconst num = (v) => (Array.isArray(v) ? Number(v[0]) : Number(v));\nconst col = (list, f) => list.map((r) => num(r[f])).filter((v) => !Number.isNaN(v));\nconst avg = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : null);\nconst sum = (a) => a.reduce((s, x) => s + x, 0);\nconst median = (a) => {\n  if (!a.length) return null;\n  const s = [...a].sort((x, y) => x - y);\n  const m = Math.floor(s.length / 2);\n  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;\n};\nconst ilYa7j = Date.now() - 7 * 24 * 3600 * 1000;\nconst recent = (d) => d && new Date(d).getTime() >= ilYa7j;\n\n// ---------- KPI ----------\nconst onboardes = joueurs.filter((j) => num(j['Filtre · Onboardé']) === 1);\nconst saisisseurs = joueurs.filter((j) => num(j['Filtre · Saisisseur']) === 1);\nconst nouveauxOnb = onboardes.filter((j) => recent(j['Onboardé le'])).length;\nconst nouvelles = parties.filter((p) => recent(p['Créée le'])).length;\nconst enCours = parties.filter((p) => p['Statut'] === 'en cours').length;\n\nconst reutil = avg(col(onboardes, 'H1 · Crée 2+ parties'));\nconst nbReutil = onboardes.filter((j) => num(j['H1 · Crée 2+ parties']) === 100).length;\nconst dureeMed = median(col(parties, 'Durée de création (s)'));\nconst comptees = parties.filter((p) => num(p['Filtre · Créée il y a 24 h+']) === 1);\nconst terminees = avg(col(comptees, 'H1 · Terminée'));\nconst nonOnb = avg(col(participations, 'H1 · Participant non onboardé'));\n\nconst parAction = (a) => evenements.filter((e) => e['Action'] === a);\nconst ctaClics = parAction('cta_clic');\nconst liens = parAction('lien_partage');\nconst ouvertures = parAction('souvenir_ouvert');\nconst visiteursUniques = new Set(ouvertures.map((e) => e['ID visiteur'])).size;\n\nconst h2 = visiteurs.filter(\n  (v) => num(v['Filtre · 1re ouverture il y a 48 h+']) === 1 && num(v['Filtre · Dans le plafond']) === 1\n);\nconst h2Onb = h2.filter((v) => v['Type'] === 'onboardé');\nconst h2Inv = h2.filter((v) => v['Type'] === 'invité');\nconst h2Total = avg(col(h2, 'H2 · Rouvre sans renvoi'));\nconst h2TotalOnb = avg(col(h2Onb, 'H2 · Rouvre sans renvoi'));\nconst h2TotalInv = avg(col(h2Inv, 'H2 · Rouvre sans renvoi'));\nconst h2Tout = avg(col(h2, 'H2 · Rouvre (tout)'));\n\nconst h3 = avg(col(saisisseurs, 'H3 · Consulte stats 2+ fois'));\nconst consultations = sum(col(joueurs, 'H3 · Nb consultations stats'));\n\n// ---------- Charte Loodi-mate (@loodi/ui tokens) ----------\n// URL publique du logo (PNG, les clients mail ignorent le SVG).\n// Ex. 'https://<ton-app>.vercel.app/pwa-192x192.png'. Vide = pastille verte de repli.\nconst LOGO_URL = '';\n\nconst C = {\n  bg: '#FAFAF8',          // theme-bg\n  surface: '#FFFFFF',     // surface-base\n  subtle: '#F2F0EC',      // surface-subtle\n  ink: '#1A1A18',         // text-primary\n  muted: '#6B6B60',       // text-secondary\n  line: '#EAE8E3',        // border-subtle, opaque pour le mail\n  mate: '#2E8B57',        // module-mate\n  mateStrong: '#267247',  // accent-strong (texte blanc AA)\n  mateSoft: '#E6F2EB',\n  okFg: '#047857', okBg: '#ECFDF5',\n  koFg: '#92400E', koBg: '#FFFBEB',\n  naFg: '#6B6B60', naBg: '#F2F0EC',\n};\nconst SANS = \"'DM Sans',Inter,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif\";\nconst DISPLAY = \"'Playfair Display',Georgia,'Times New Roman',serif\";\n\nconst pct = (v) => (v === null ? '–' : `${Math.round(v)} %`);\nconst esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');\n\nconst pill = (etat) => {\n  const p = {\n    ok: [C.okFg, C.okBg, 'Seuil atteint'],\n    ko: [C.koFg, C.koBg, 'Sous le seuil'],\n    na: [C.naFg, C.naBg, 'Pas encore de données'],\n    info: [C.naFg, C.naBg, 'Indicateur'],\n  }[etat];\n  return `<span style=\"display:inline-block;padding:3px 9px;border-radius:999px;background:${p[1]};color:${p[0]};font-size:11px;font-weight:600;white-space:nowrap\">${p[2]}</span>`;\n};\nconst etat = (v, ok) => (v === null ? 'na' : ok(v) ? 'ok' : 'ko');\n\nconst barre = (v) => {\n  if (v === null) return '';\n  const w = Math.max(0, Math.min(100, Math.round(v)));\n  const plein = w > 0 ? `<td width=\"${w}%\" style=\"background:${C.mate};height:8px;line-height:8px;font-size:0;border-radius:4px\">&nbsp;</td>` : '';\n  const vide = w < 100 ? `<td style=\"background:${C.subtle};height:8px;line-height:8px;font-size:0;border-radius:4px\">&nbsp;</td>` : '';\n  return `<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin-top:10px;border-collapse:separate\"><tr>${plein}${vide}</tr></table>`;\n};\n\nconst kpi = ({ label, detail = '', valeur, statut = 'info', progression = null, dernier = false }) => `\n<tr><td style=\"padding:16px 18px;${dernier ? '' : `border-bottom:1px solid ${C.line};`}\">\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n    <td style=\"vertical-align:top\">\n      <div style=\"font-size:15px;font-weight:600;color:${C.ink}\">${esc(label)}</div>\n      ${detail ? `<div style=\"font-size:13px;line-height:1.45;color:${C.muted};margin-top:3px\">${esc(detail)}</div>` : ''}\n    </td>\n    <td style=\"vertical-align:top;text-align:right;white-space:nowrap;padding-left:12px\">\n      <div style=\"font-size:24px;font-weight:700;color:${C.ink};line-height:1.1\">${valeur}</div>\n      <div style=\"margin-top:6px\">${pill(statut)}</div>\n    </td>\n  </tr></table>\n  ${barre(progression)}\n</td></tr>`;\n\nconst section = (code, titre, hypothese, lignes) => `\n<tr><td style=\"padding:30px 2px 12px\">\n  <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n    <td style=\"vertical-align:middle\"><span style=\"display:inline-block;padding:4px 10px;border-radius:8px;background:${C.mateSoft};color:${C.mateStrong};font-size:12px;font-weight:700;letter-spacing:0.04em\">${code}</span></td>\n    <td style=\"vertical-align:middle;padding-left:10px;font-family:${DISPLAY};font-size:21px;font-weight:600;color:${C.ink}\">${esc(titre)}</td>\n  </tr></table>\n  <div style=\"font-size:14px;line-height:1.5;color:${C.muted};margin-top:8px\">${esc(hypothese)}</div>\n</td></tr>\n<tr><td>\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:${C.surface};border:1px solid ${C.line};border-radius:18px;border-collapse:separate\">\n    ${lignes.map((l, i) => kpi({ ...l, dernier: i === lignes.length - 1 })).join('')}\n  </table>\n</td></tr>`;\n\nconst tuile = (valeur, label, delta) => `\n<td width=\"33%\" style=\"padding:0 4px;vertical-align:top\">\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:${C.surface};border:1px solid ${C.line};border-radius:18px;border-collapse:separate\">\n    <tr><td style=\"padding:16px 14px\">\n      <div style=\"font-family:${DISPLAY};font-size:28px;font-weight:700;color:${C.ink};line-height:1.1\">${valeur}</div>\n      <div style=\"font-size:13px;color:${C.muted};margin-top:4px\">${esc(label)}</div>\n      ${delta ? `<div style=\"display:inline-block;margin-top:8px;padding:2px 8px;border-radius:999px;background:${C.mateSoft};font-size:12px;font-weight:600;color:${C.mateStrong}\">${esc(delta)}</div>` : ''}\n    </td></tr>\n  </table>\n</td>`;\n\nconst logo = LOGO_URL\n  ? `<img src=\"${LOGO_URL}\" width=\"52\" height=\"52\" alt=\"Loodi-mate\" style=\"display:block;border:0;border-radius:14px\">`\n  : `<div style=\"width:52px;height:52px;border-radius:14px;background:${C.mate};color:#FFFFFF;font-family:${DISPLAY};font-size:26px;font-weight:700;line-height:52px;text-align:center\">m</div>`;\n\nconst date = new Date().toLocaleDateString('fr-FR', {\n  timeZone: 'Europe/Paris', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',\n});\n\n// ---------- Mail ----------\nconst html = `<!doctype html>\n<html lang=\"fr\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<link href=\"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap\" rel=\"stylesheet\">\n<title>Loodi-mate · Rapport hebdo</title></head>\n<body style=\"margin:0;padding:0;background:${C.bg}\">\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:${C.bg}\"><tr><td align=\"center\" style=\"padding:24px 12px\">\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;font-family:${SANS};color:${C.ink}\">\n\n<tr><td>\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:${C.surface};border:1px solid ${C.line};border-radius:18px;border-collapse:separate;border-top:4px solid ${C.mate}\">\n    <tr><td style=\"padding:22px 20px\">\n      <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n        <td style=\"vertical-align:middle\">${logo}</td>\n        <td style=\"vertical-align:middle;padding-left:14px\">\n          <div style=\"font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:${C.mateStrong}\">Loodi-mate · Test du MVP</div>\n          <div style=\"font-family:${DISPLAY};font-size:26px;font-weight:600;line-height:1.2;color:${C.ink};margin-top:4px\">Rapport hebdo des hypothèses</div>\n        </td>\n      </tr></table>\n      <div style=\"font-size:14px;color:${C.muted};margin-top:14px\">${esc(date)} · cumul depuis le début du test</div>\n    </td></tr>\n  </table>\n</td></tr>\n\n<tr><td style=\"padding-top:12px\">\n  <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin:0 -4px\"><tr>\n    ${tuile(`${onboardes.length}<span style=\"font-family:${SANS};font-size:14px;color:${C.muted};font-weight:600\"> / 8–12</span>`, 'joueurs onboardés', nouveauxOnb ? `+${nouveauxOnb} cette semaine` : '')}\n    ${tuile(parties.length, 'parties enregistrées', nouvelles ? `+${nouvelles} cette semaine` : '')}\n    ${tuile(saisisseurs.length, 'saisisseurs', '')}\n  </tr></table>\n</td></tr>\n\n${section('H1', 'Enregistrement', 'Les joueurs enregistrent leurs parties si la saisie est simple et rapide.', [\n  { label: 'Réutilisation', detail: `Onboardés ayant créé 2 parties ou plus (${nbReutil} sur ${onboardes.length}) · seuil 50 %`, valeur: pct(reutil), statut: etat(reutil, (v) => v >= 50), progression: reutil },\n  { label: 'Durée médiane de création', detail: 'De \"Nouvelle partie\" au tap \"Créer\" · seuil < 60 s', valeur: dureeMed === null ? '–' : `${Math.round(dureeMed)} s`, statut: etat(dureeMed, (v) => v < 60) },\n  { label: 'Parties terminées', detail: `Parties créées il y a 24 h ou plus (n = ${comptees.length}) · seuil 90 %`, valeur: pct(terminees), statut: etat(terminees, (v) => v >= 90), progression: terminees },\n  { label: 'Participants non onboardés', detail: `Diffusion · ${enCours} partie(s) en cours`, valeur: pct(nonOnb) },\n  { label: 'Clics sur \"Essayer Loodi-mate\"', detail: `Diffusion depuis la vue invité · +${ctaClics.filter((e) => recent(e['Date'])).length} cette semaine`, valeur: ctaClics.length },\n])}\n\n${section('H2', 'Souvenirs', 'Les joueurs reviennent d’eux-mêmes consulter leurs souvenirs.', [\n  { label: 'Réouverture à 48 h+ sans renvoi', detail: `Onboardés et invités (n = ${h2.length}) · seuil 50 %`, valeur: pct(h2Total), statut: etat(h2Total, (v) => v >= 50), progression: h2Total },\n  { label: 'dont joueurs onboardés', detail: `n = ${h2Onb.length} · seuil 50 %`, valeur: pct(h2TotalOnb), statut: etat(h2TotalOnb, (v) => v >= 50), progression: h2TotalOnb },\n  { label: 'dont invités du lien', detail: `n = ${h2Inv.length} · seuil 50 %`, valeur: pct(h2TotalInv), statut: etat(h2TotalInv, (v) => v >= 50), progression: h2TotalInv },\n  { label: 'Réouverture tout compris', detail: 'Y compris après un renvoi du lien', valeur: pct(h2Tout) },\n  { label: 'Partage et consultation', detail: `${liens.length} lien(s) partagé(s) · ${visiteursUniques} visiteur(s) unique(s) · +${ouvertures.filter((e) => recent(e['Date'])).length} ouverture(s) cette semaine`, valeur: ouvertures.length },\n])}\n\n${section('H3', 'Statistiques', 'Les joueurs suivent leurs résultats dans la durée.', [\n  { label: 'Saisisseurs engagés', detail: `Consultent leurs stats 2 fois ou plus (n = ${saisisseurs.length}) · seuil 50 %`, valeur: pct(h3), statut: etat(h3, (v) => v >= 50), progression: h3 },\n  { label: 'Consultations des statistiques', detail: 'Total sur la période', valeur: consultations },\n])}\n\n<tr><td style=\"padding:26px 4px 8px;font-size:12px;line-height:1.55;color:${C.muted}\">\n  H2 recalculé chaque jour à 6 h par n8n. Effectifs faibles : lire les pourcentages avec leur n.<br>\n  Sources : base Airtable \"MVP Jedha Loodi mate\", interface \"Pilotage hypothèses\".\n</td></tr>\n\n</table>\n</td></tr></table>\n</body></html>`;\n\nreturn [{ json: {\n  sujet: `Loodi-mate KPI : ${nouvelles} nouvelle(s) partie(s) cette semaine`,\n  html,\n} }];\n"
+      },
+      "id": "437bd876-5533-42b7-87a2-1d6deeb652ce",
+      "name": "Calculer les KPI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "eb553cf0-3fe0-4384-9f60-e7a960fe7993",
+      "name": "Chaque vendredi 9h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "expediteur@example.com",
+        "toEmail": "destinataire@example.com",
+        "subject": "={{ $json.sujet }}",
+        "html": "={{ $json.html }}",
+        "options": {},
+        "emailFormat": "html"
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1568,
+        0
+      ],
+      "id": "50fc560f-04ee-40ef-bb3a-76a0ea17deef",
+      "name": "Send an Email",
+      "webhookId": "25e89fe3-d542-4062-acb2-1267ceef74cc",
+      "credentials": {
+        "smtp": {
+          "id": "yrtBUgHbFCfiHcKY",
+          "name": "SMTP account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl3ceg2pfP2EqirJ",
+          "mode": "id"
+        },
+        "options": {},
+        "returnAll": true
+      },
+      "id": "f6b5148f-c5df-47e9-a692-a344b03831a4",
+      "name": "Lire Participations",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        0
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblOe6jCZGUYeeauA",
+          "mode": "id"
+        },
+        "options": {},
+        "returnAll": true
+      },
+      "id": "3c371c9b-710e-4b47-9d41-450bb6f230dd",
+      "name": "Lire Événements",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        896,
+        0
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblaj4pcEiOalng9Z",
+          "mode": "id"
+        },
+        "options": {},
+        "returnAll": true
+      },
+      "id": "06b29b49-95ee-49f4-aed1-73b51b0b2f02",
+      "name": "Lire Visiteurs souvenir",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        0
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      },
+      "alwaysOutputData": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chaque vendredi 9h": {
+      "main": [
+        [
+          {
+            "node": "Lire Parties",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lire Parties": {
+      "main": [
+        [
+          {
+            "node": "Lire Joueurs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lire Joueurs": {
+      "main": [
+        [
+          {
+            "node": "Lire Participations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lire Participations": {
+      "main": [
+        [
+          {
+            "node": "Lire Événements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lire Événements": {
+      "main": [
+        [
+          {
+            "node": "Lire Visiteurs souvenir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lire Visiteurs souvenir": {
+      "main": [
+        [
+          {
+            "node": "Calculer les KPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculer les KPI": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "timeSavedPerExecution": 5,
+    "timezone": "Europe/Paris"
+  },
+  "versionId": "6e946b62-ad97-4fc3-95f8-8139d04c212a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "644cb2fadaf799142cabedc804be74ca15a60aa2cb7fb443c746a73e415e7dbe"
+  },
+  "nodeGroups": [],
+  "id": "zUZLVdNunmcMYHgq",
+  "tags": []
+}

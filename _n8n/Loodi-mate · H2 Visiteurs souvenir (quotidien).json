@@ -1,0 +1,378 @@
+{
+  "name": "Loodi-mate · H2 Visiteurs souvenir (quotidien)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "id": "f133662c-26b0-4618-a4ef-6a8f9f950102",
+      "name": "Chaque jour 6h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblOe6jCZGUYeeauA",
+          "mode": "id"
+        },
+        "filterByFormula": "OR({Action}='souvenir_ouvert',{Action}='lien_partage')",
+        "options": {}
+      },
+      "id": "eaafe377-3ac3-4f4e-99ba-8a511a0b24fe",
+      "name": "Événements",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        0
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbluswyc5kjhijKxJ",
+          "mode": "id"
+        },
+        "filterByFormula": "{ID appareil}!=''",
+        "options": {}
+      },
+      "id": "8dff2c86-aeb7-4489-85ba-67f684283c82",
+      "name": "Joueurs",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblgy5ycSeMQ6JPOZ",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "647500bd-ae48-4abe-a99b-a327486e44cd",
+      "name": "Parties",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n · nœud Code \"Calcul H2\" (mode : Run Once for All Items)\n// Entrées lues par nom de nœud : \"Événements\", \"Joueurs\", \"Parties\"\n// Sortie : une ligne par personne × partie pour la table \"Visiteurs souvenir\"\n\nconst H48 = 48 * 3600 * 1000;\n// Le nœud Airtable peut renvoyer les champs à plat ou sous .fields selon la version\nconst get = (it) => it.json.fields ?? it.json;\n\n// Personnes onboardées = ID appareil connus\nconst appareils = new Set(\n  $('Joueurs').all().map((i) => get(i)['ID appareil']).filter(Boolean)\n);\n\n// Plafond invités : N = nombre de participations de la partie\nconst nbParticipants = {};\nfor (const i of $('Parties').all()) {\n  nbParticipants[i.json.id] = (get(i)['Participations'] || []).length;\n}\n\nconst evenements = $('Événements').all()\n  .map(get)\n  .filter((e) => e['Partie']?.length && e['Date'])\n  .map((e) => ({\n    action: e['Action'],\n    origine: e['Origine'],\n    visiteur: e['ID visiteur'],\n    partie: e['Partie'][0],\n    t: new Date(e['Date']).getTime(),\n  }));\n\n// Envois du lien par partie\nconst partages = {};\nfor (const e of evenements) {\n  if (e.action === 'lien_partage') (partages[e.partie] ??= []).push(e.t);\n}\n\n// Ouvertures regroupées par personne × partie\nconst groupes = {};\nfor (const e of evenements) {\n  if (e.action !== 'souvenir_ouvert' || !e.visiteur) continue;\n  (groupes[`${e.visiteur}|${e.partie}`] ??= []).push(e);\n}\n\nconst lignes = Object.entries(groupes).map(([cle, evs]) => {\n  evs.sort((a, b) => a.t - b.t);\n  const premiere = evs[0].t;\n  const { visiteur, partie } = evs[0];\n  const tardives = evs.filter((e) => e.t - premiere > H48);\n\n  // Retour volontaire : depuis l'app, ou via le lien sans renvoi entre la 1re ouverture et celle-ci\n  const sansRenvoi = tardives.some(\n    (e) =>\n      e.origine === 'app' ||\n      !(partages[partie] || []).some((p) => p > premiere && p <= e.t)\n  );\n\n  return {\n    cle,\n    visiteur,\n    partie,\n    premiere,\n    nb: evs.length,\n    type: appareils.has(visiteur) ? 'onboardé' : 'invité',\n    rouvre: tardives.length > 0,\n    sansRenvoi,\n  };\n});\n\n// Plafond : les N premiers invités de chaque partie, par date de 1re ouverture\nconst invitesParPartie = {};\nfor (const l of lignes) {\n  if (l.type === 'invité') (invitesParPartie[l.partie] ??= []).push(l);\n}\nconst dansPlafond = new Set();\nfor (const [partie, ls] of Object.entries(invitesParPartie)) {\n  ls.sort((a, b) => a.premiere - b.premiere)\n    .slice(0, nbParticipants[partie] ?? 0)\n    .forEach((l) => dansPlafond.add(l.cle));\n}\n\nreturn lignes.map((l) => ({\n  json: {\n    'Clé': l.cle,\n    'ID visiteur': l.visiteur,\n    'Partie': [l.partie],\n    'Type': l.type,\n    'Première ouverture': new Date(l.premiere).toISOString(),\n    'Nb ouvertures': l.nb,\n    'H2 · Rouvre sans renvoi': l.sansRenvoi ? 100 : 0,\n    'H2 · Rouvre (tout)': l.rouvre ? 100 : 0,\n    'Filtre · Dans le plafond':\n      l.type === 'onboardé' || dansPlafond.has(l.cle) ? 1 : 0,\n  },\n}));\n"
+      },
+      "id": "635eede9-e3db-4594-adaa-bcd4d9b026cd",
+      "name": "Calcul H2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appTGUCdqHkz3EEbA",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblaj4pcEiOalng9Z",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Clé"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Clé",
+              "displayName": "Clé",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ID visiteur",
+              "displayName": "ID visiteur",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Partie",
+              "displayName": "Partie",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "onboardé",
+                  "value": "onboardé"
+                },
+                {
+                  "name": "invité",
+                  "value": "invité"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Première ouverture",
+              "displayName": "Première ouverture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nb ouvertures",
+              "displayName": "Nb ouvertures",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "H2 · Rouvre sans renvoi",
+              "displayName": "H2 · Rouvre sans renvoi",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "H2 · Rouvre (tout)",
+              "displayName": "H2 · Rouvre (tout)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Filtre · Dans le plafond",
+              "displayName": "Filtre · Dans le plafond",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Filtre · 1re ouverture il y a 48 h+",
+              "displayName": "Filtre · 1re ouverture il y a 48 h+",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "id": "a3a0a31f-f58b-4460-8d92-f2686222392d",
+      "name": "Visiteurs souvenir (upsert)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1104,
+        0
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Oa6HdFXAQZIpZz7K",
+          "name": "Airtable Personal Access Token account 13"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chaque jour 6h": {
+      "main": [
+        [
+          {
+            "node": "Événements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Événements": {
+      "main": [
+        [
+          {
+            "node": "Joueurs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Joueurs": {
+      "main": [
+        [
+          {
+            "node": "Parties",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parties": {
+      "main": [
+        [
+          {
+            "node": "Calcul H2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcul H2": {
+      "main": [
+        [
+          {
+            "node": "Visiteurs souvenir (upsert)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "65fad1f0-1717-40d9-a2af-6a1fb3c8ee61",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "644cb2fadaf799142cabedc804be74ca15a60aa2cb7fb443c746a73e415e7dbe"
+  },
+  "nodeGroups": [],
+  "id": "oDKdCdCgrZDuWEFv",
+  "tags": []
+}
