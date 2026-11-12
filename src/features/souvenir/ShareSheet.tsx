@@ -31,7 +31,7 @@ export function ShareSheet({ open, onClose, url, gameName, partyId }: { open: bo
       setFeedback(`Copie impossible. Le lien : ${url}`)
     }
   }
-  const btn = 'flex min-h-14 w-full items-center gap-3 rounded-xl border border-line bg-surface px-4 text-left text-base font-medium hover:bg-surface-subtle'
+  const btn = 'flex min-h-14 w-full items-center gap-3 rounded-control border border-line bg-surface px-4 text-left text-base font-medium hover:bg-surface-subtle'
   return (
     <Sheet
       open={open}

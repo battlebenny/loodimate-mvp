@@ -1,32 +1,5 @@
-/* Local versions of Loodi One's MiniHeader and BottomNav (reference: @loodi/ui src, never imported). */
-.mate-header {
-  position: fixed;
-  z-index: 30;
-  inset: 0 0 auto 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  box-sizing: border-box;
-  height: calc(52px + var(--safe-top));
-  padding: var(--safe-top) calc(1rem + var(--safe-right)) 0 calc(1rem + var(--safe-left));
-  color: var(--color-text-light);
-}
-.mate-header__glass {
-  position: absolute;
-  inset: 0;
-  border-bottom: 1px solid var(--color-border-subtle);
-  background: var(--color-surface-glass);
-  backdrop-filter: blur(8px);
-  transition: opacity 150ms ease-out;
-  pointer-events: none;
-}
-.mate-header__back {
-  display: inline-flex; width: 44px; height: 44px; margin: -4px; align-items: center; justify-content: center;
-  border: 0; border-radius: var(--radius-pill); background: transparent; color: inherit; cursor: pointer;
-  transition: transform 150ms ease-out;
-}
-.mate-header__back:active { transform: scale(.9); }
-
+/* BrandLockup (onboarding, install) and Mate's BottomNav. The header is @loodi/ui's MiniHeader. */
+/* The shared BottomNav only knows a few icons (no plus, no chart), so Mate keeps a local copy aligned on bottom-nav.css. */
 /* Brand lockup (logo, wordmark, "Mate" tile), shared by the header and onboarding. */
 .mate-brand {
   --s: var(--brand-scale, 1);
@@ -58,17 +31,15 @@
   line-height: 1;
   transform: perspective(160px) rotateX(4deg) rotateZ(-5.5deg);
 }
-:where(.dark) .mate-header { color: var(--color-text-primary-dark); }
-:where(.dark) .mate-header__glass { border-color: var(--color-border-subtle-dark); background: var(--color-surface-glass-dark); }
 :where(.dark) .mate-brand__wordmark--light { display: none; }
 :where(.dark) .mate-brand__wordmark--dark { display: block; }
 
 .mate-nav {
   position: fixed;
   z-index: 50;
-  bottom: calc(1rem + var(--safe-bottom));
-  left: calc(50% + (var(--safe-left) - var(--safe-right)) / 2);
-  width: calc(100% - 2rem - var(--safe-left) - var(--safe-right));
+  bottom: calc(1rem + var(--safe-area-inset-bottom));
+  left: calc(50% + (var(--safe-area-inset-left) - var(--safe-area-inset-right)) / 2);
+  width: calc(100% - 2rem - var(--safe-area-inset-left) - var(--safe-area-inset-right));
   max-width: 448px;
   transform: translateX(-50%);
   transition: transform 300ms ease-out, opacity 300ms ease-out;
@@ -98,30 +69,30 @@
   justify-content: center;
   gap: 2px;
   border-radius: var(--radius-lg);
-  color: color-mix(in srgb, var(--color-text-light) 62%, transparent);
+  /* Charte uses 50%; 72% keeps 11px labels at AA (4.5:1) on the glass. */
+  color: color-mix(in srgb, var(--color-text-light) 72%, transparent);
   text-decoration: none;
   transition: color 150ms ease-out, transform 150ms ease-out;
 }
 .mate-nav__tab:hover { color: var(--color-text-light); }
 .mate-nav__tab:active { transform: scale(.9); }
-.mate-nav__tab--active, .mate-nav__tab--active:hover { color: var(--color-accent-strong); }
+.mate-nav__tab--active, .mate-nav__tab--active:hover { color: var(--color-module-mate-text); }
 .mate-nav__indicator {
   position: absolute;
   top: var(--spacing-xs);
   bottom: var(--spacing-xs);
   width: calc(100% / 3);
   border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--color-text-light) 6%, transparent);
+  background: color-mix(in srgb, var(--color-text-light) 5%, transparent);
   pointer-events: none;
   transition: left 300ms cubic-bezier(.34, 1.56, .64, 1);
 }
 :where(.dark) .mate-nav { color: var(--color-text-primary-dark); }
 :where(.dark) .mate-nav__surface { border-color: var(--color-border-subtle-dark); background: var(--color-surface-glass-dark); }
-:where(.dark) .mate-nav__tab { color: color-mix(in srgb, var(--color-text-primary-dark) 62%, transparent); }
+:where(.dark) .mate-nav__tab { color: color-mix(in srgb, var(--color-text-primary-dark) 72%, transparent); }
 :where(.dark) .mate-nav__tab:hover { color: var(--color-text-primary-dark); }
-:where(.dark) .mate-nav__tab--active, :where(.dark) .mate-nav__tab--active:hover { color: color-mix(in srgb, var(--color-module-mate) 70%, white); }
 :where(.dark) .mate-nav__indicator { background: color-mix(in srgb, var(--color-text-primary-dark) 10%, transparent); }
 
 @media (prefers-reduced-motion: reduce) {
-  .mate-header__glass, .mate-header__back, .mate-nav, .mate-nav__tab, .mate-nav__indicator { transition: none; }
+  .mate-nav, .mate-nav__tab, .mate-nav__indicator { transition: none; }
 }

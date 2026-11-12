@@ -24,7 +24,7 @@ export function HighlightSheet({ open, value, onClose, onSave }: { open: boolean
         rows={4}
         onChange={(e) => setText(e.target.value)}
         placeholder="Ex. Léa a pris la tête dès la 2e manche."
-        className="w-full resize-none rounded-[var(--radius-control)] border-[1.5px] border-line bg-surface p-3 text-base text-ink outline-none focus:border-accent"
+        className="w-full resize-none rounded-control border border-line bg-surface p-3 text-base text-ink outline-none focus:border-accent"
       />
       <p className="m-0 text-right text-xs text-ink-soft">{text.length}/280</p>
       {error && (

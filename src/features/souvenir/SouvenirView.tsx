@@ -24,10 +24,11 @@ type Props = {
   onAddPhoto?: () => void
   photoBusy?: boolean
   banner?: ReactNode
+  footer?: ReactNode
 }
 
 /** The souvenir: immersive photo, result, ranking and highlight. Reused by the guest view. */
-export function SouvenirView({ party, mode, topLeft, onEdit, onEditHighlight, onAddPhoto, photoBusy, banner }: Props) {
+export function SouvenirView({ party, mode, topLeft, onEdit, onEditHighlight, onAddPhoto, photoBusy, banner, footer }: Props) {
   const [cur, setCur] = useState(0)
   const [viewer, setViewer] = useState(false)
   const owner = mode === 'owner'
@@ -58,10 +59,10 @@ export function SouvenirView({ party, mode, topLeft, onEdit, onEditHighlight, on
           <div className="flex h-full w-full items-center justify-center">{heroContent}</div>
         )}
       </div>
-      <div className="fixed inset-x-0 top-0 z-20 mx-auto flex max-w-[560px] justify-between px-4 pt-[calc(16px+var(--safe-top))]">
+      <div className="fixed inset-x-0 top-0 z-20 mx-auto flex max-w-[560px] justify-between px-4 pt-[calc(16px+var(--safe-area-inset-top))]">
         {topLeft ?? <span />}
         {canAdd && (
-          <button type="button" onClick={onAddPhoto} disabled={photoBusy} aria-label="Ajouter une photo" className="flex size-11 items-center justify-center rounded-full bg-white/92 text-[#1c1b19] shadow-sm">
+          <button type="button" onClick={onAddPhoto} disabled={photoBusy} aria-label="Ajouter une photo" className="loodi-mini-header__icon-button text-ink">
             {photoBusy ? <span className="size-5 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <CameraIcon />}
           </button>
         )}
@@ -71,7 +72,7 @@ export function SouvenirView({ party, mode, topLeft, onEdit, onEditHighlight, on
         {banner}
         <div className="flex items-end justify-between gap-3">
           <div className="flex min-w-0 flex-col">
-            <h1 className="m-0 font-display text-[26px] leading-tight font-semibold">{party.game.name}</h1>
+            <h1 className="m-0 page-title">{party.game.name}</h1>
             <span className="text-[13px] text-ink-soft">
               {formatLongDate(party.finishedAt ?? party.createdAt)} · {party.players.length} joueur{party.players.length > 1 ? 's' : ''}
             </span>
@@ -79,7 +80,7 @@ export function SouvenirView({ party, mode, topLeft, onEdit, onEditHighlight, on
           {photos.length > 1 && (
             <div className="flex shrink-0 gap-1.5">
               {photos.map((ph, i) => (
-                <button key={ph.url} type="button" onClick={() => setCur(i)} aria-label={`Afficher la photo ${i + 1}`} aria-pressed={i === cur} className={`size-[52px] overflow-hidden rounded-[10px] border-2 ${i === cur ? 'border-ink' : 'border-transparent'}`}>
+                <button key={ph.url} type="button" onClick={() => setCur(i)} aria-label={`Afficher la photo ${i + 1}`} aria-pressed={i === cur} className={`size-12 overflow-hidden rounded-control border-2 ${i === cur ? 'border-accent' : 'border-transparent'}`}>
                   <img src={ph.thumbUrl} alt="" className="h-full w-full object-cover" />
                 </button>
               ))}
@@ -90,19 +91,19 @@ export function SouvenirView({ party, mode, topLeft, onEdit, onEditHighlight, on
         {(() => {
           const inner = (
             <>
-              <Trophy />
+              <span className="text-accent-text"><Trophy /></span>
               <span className="flex grow flex-col gap-0.5 text-left">
                 <span className="text-[19px] font-bold">{title}</span>
-                {subtitle && <span className="text-sm opacity-80">{owner || title !== 'Pas de vainqueur' ? subtitle : ''}</span>}
+                {subtitle && <span className="text-sm text-ink-soft">{owner || title !== 'Pas de vainqueur' ? subtitle : ''}</span>}
               </span>
               {owner && (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeOpacity=".7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink-soft" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M4 20h4L19 9l-4-4L4 16z" />
                 </svg>
               )}
             </>
           )
-          const cls = 'flex w-full items-center gap-3.5 rounded-2xl bg-accent-strong px-4 py-3.5 text-white'
+          const cls = 'flex w-full items-center gap-3.5 rounded-card border border-accent/30 bg-accent-soft px-4 py-3.5 text-left text-ink'
           return owner ? (
             <button type="button" className={cls} onClick={onEdit} aria-label={`${title}. Corriger le résultat`}>
               {inner}
@@ -125,13 +126,13 @@ export function SouvenirView({ party, mode, topLeft, onEdit, onEditHighlight, on
         )}
 
         {(party.highlight || owner) && (
-          <section className="flex flex-col gap-1 rounded-[14px] border border-line bg-surface px-4 py-3" aria-labelledby="highlight-title">
+          <section className="flex flex-col gap-1 rounded-card border border-line bg-surface px-4 py-3" aria-labelledby="highlight-title">
             <div className="flex items-center justify-between">
-              <h2 id="highlight-title" className="m-0 text-xs font-semibold tracking-[0.06em] text-ink-soft uppercase">
+              <h2 id="highlight-title" className="m-0 section-label">
                 Le fait marquant
               </h2>
               {owner && (
-                <button type="button" onClick={onEditHighlight} className="min-h-11 text-sm font-semibold text-accent-strong">
+                <button type="button" onClick={onEditHighlight} className="min-h-11 text-sm font-semibold text-accent-text">
                   {party.highlight ? 'Modifier' : 'Ajouter'}
                 </button>
               )}
@@ -139,6 +140,7 @@ export function SouvenirView({ party, mode, topLeft, onEdit, onEditHighlight, on
             <p className="m-0 text-[15px] leading-relaxed">{party.highlight ?? <span className="text-ink-soft">Ajouter un fait marquant</span>}</p>
           </section>
         )}
+        {footer}
       </article>
       {viewer && photos.length > 0 && <PhotoViewer photos={photos} start={cur} onClose={() => setViewer(false)} />}
     </div>

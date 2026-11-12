@@ -42,17 +42,17 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-[560px] flex-col px-6 pt-[calc(32px+var(--safe-top))] pb-[calc(32px+var(--safe-bottom))]">
+    <main className="mx-auto flex min-h-dvh w-full max-w-[560px] flex-col px-6 pt-[calc(32px+var(--safe-area-inset-top))] pb-[calc(32px+var(--safe-area-inset-bottom))]">
       <div className="flex flex-1 flex-col justify-center gap-7">
         <BrandLockup scale={1.5} />
 
         <div className="flex flex-col gap-2.5">
-          <h1 className="m-0 font-display text-[30px] leading-tight font-semibold">Garde la trace de tes parties</h1>
+          <h1 className="m-0 page-title">Garde la trace de tes parties</h1>
           <p className="m-0 text-base text-ink-soft">Scores, vainqueurs et souvenirs de tes soirées jeux, sans créer de compte.</p>
         </div>
 
         {conflict ? (
-          <div className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-4" role="alertdialog" aria-labelledby="conflict-title">
+          <div className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4" role="alertdialog" aria-labelledby="conflict-title">
             <p id="conflict-title" className="m-0 font-semibold">
               {conflict.code === 'claimable' ? `${conflict.name} joue déjà sur Mate. C’est toi ?` : `C’est toi sur un autre appareil ?`}
             </p>

@@ -12,7 +12,7 @@ export function TextField({ label, hint, error, className = '', hideLabel, ...re
         {...rest}
         aria-invalid={error ? true : undefined}
         aria-describedby={hint || error ? `${id}-hint` : undefined}
-        className="h-[52px] w-full rounded-[var(--radius-control)] border-[1.5px] border-line bg-surface px-4 text-base text-ink outline-none placeholder:text-ink-soft/70 focus:border-accent"
+        className="h-12 w-full rounded-control border border-line bg-surface px-4 text-base text-ink outline-none placeholder:text-ink-soft/70 focus:border-accent"
       />
       {(error || hint) && (
         <p id={`${id}-hint`} className={`m-0 text-[13px] ${error ? 'text-danger' : 'text-ink-soft'}`}>

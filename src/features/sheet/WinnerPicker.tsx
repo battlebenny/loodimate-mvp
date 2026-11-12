@@ -12,7 +12,7 @@ export function WinnerPicker({ players, winners, onChange }: { players: { id: st
             type="button"
             aria-pressed={on}
             onClick={() => onChange(on ? winners.filter((w) => w !== p.id) : [...winners, p.id])}
-            className={`flex min-h-[60px] w-full items-center gap-3 rounded-[14px] border-[1.5px] bg-surface px-4 text-left ${on ? 'border-accent-strong' : 'border-line'}`}
+            className={`flex min-h-[60px] w-full items-center gap-3 rounded-card border px-4 text-left ${on ? 'border-accent/30 bg-accent-soft' : 'border-line bg-surface'}`}
           >
             <span aria-hidden className={`flex size-[22px] shrink-0 items-center justify-center rounded-md border-2 ${on ? 'border-accent-strong bg-accent-strong text-white' : 'border-ink-soft text-transparent'}`}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">

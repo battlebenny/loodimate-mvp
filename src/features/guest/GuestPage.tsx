@@ -40,7 +40,7 @@ export function GuestPage() {
         <MiniHeader />
         <main className="mx-auto flex min-h-dvh max-w-[560px] flex-col justify-center gap-4 px-6">
           <h1 className="m-0 font-display text-2xl font-semibold">Ce souvenir n’existe pas ou plus.</h1>
-          <Link to="/" className="font-semibold text-accent-strong">
+          <Link to="/" className="font-semibold text-accent-text">
             Découvrir Loodi-mate
           </Link>
         </main>
@@ -53,22 +53,18 @@ export function GuestPage() {
     <SouvenirView
       party={party}
       mode="guest"
-      banner={
-        <div className="flex items-center justify-between gap-3 rounded-[14px] bg-surface-subtle px-4 py-3">
-          <div className="flex min-w-0 flex-col">
-            <span className="text-xs font-semibold tracking-[0.06em] text-ink-soft uppercase">Souvenir partagé</span>
-            <span className="text-sm">
-              Partagé par {party.creatorName} · Garde aussi la trace de tes parties
-            </span>
-          </div>
+      banner={<p className="m-0 text-sm text-ink-soft">Souvenir partagé par {party.creatorName}</p>}
+      footer={
+        <p className="m-0 mt-4 border-t border-line pt-4 text-center text-sm text-ink-soft">
+          Toi aussi, garde la trace de tes parties.{' '}
           <Link
             to="/"
             onClick={() => track('cta_clic', { origin: 'lien', partyId: party.id })}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-full border-[1.5px] border-accent-strong px-3.5 text-sm font-semibold text-accent-strong"
+            className="inline-flex min-h-11 items-center font-semibold text-accent-text underline-offset-2 hover:underline"
           >
             Essayer Loodi-mate
           </Link>
-        </div>
+        </p>
       }
     />
   )

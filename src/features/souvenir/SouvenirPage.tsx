@@ -1,3 +1,4 @@
+import { ChevronLeft } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
@@ -64,10 +65,8 @@ export function SouvenirPage() {
         party={party}
         mode="owner"
         topLeft={
-          <button type="button" onClick={() => navigate('/')} aria-label="Retour à l’accueil" className="flex size-11 items-center justify-center rounded-full bg-white/92 text-[#1c1b19] shadow-sm">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
+          <button type="button" onClick={() => navigate('/')} aria-label="Retour à l’accueil" className="loodi-mini-header__icon-button text-ink">
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
           </button>
         }
         onEdit={() => setSheet('edit')}
@@ -76,7 +75,7 @@ export function SouvenirPage() {
         photoBusy={photos.busy}
       />
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-bg">
-        <div className="mx-auto flex max-w-[560px] flex-col gap-2 px-5 pt-4 pb-[calc(16px+var(--safe-bottom))]">
+        <div className="mx-auto flex max-w-[560px] flex-col gap-2 px-5 pt-4 pb-[calc(16px+var(--safe-area-inset-bottom))]">
           {photos.error && (
             <p role="alert" className="m-0 text-sm text-danger">
               {photos.error}

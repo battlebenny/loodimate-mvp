@@ -10,6 +10,3 @@ export const IconPlus = () => (
 export const IconStats = () => (
   <svg {...base}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
 )
-export const IconBack = () => (
-  <svg {...base} width={20} height={20} strokeWidth={2}><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
-)

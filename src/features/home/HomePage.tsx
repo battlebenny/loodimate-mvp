@@ -10,7 +10,7 @@ import type { PartySummaryDTO } from '../../../shared/types'
 type Lists = { ongoing: PartySummaryDTO[]; finished: PartySummaryDTO[] }
 
 const Label = ({ children, id }: { children: string; id: string }) => (
-  <h2 id={id} className="m-0 text-xs font-semibold tracking-[0.06em] text-ink-soft uppercase">
+  <h2 id={id} className="m-0 section-label">
     {children}
   </h2>
 )
@@ -37,7 +37,7 @@ export function HomePage() {
 
   return (
     <AppShell>
-      <h1 className="m-0 mb-6 font-display text-[28px] font-semibold">Salut {me.name}</h1>
+      <h1 className="m-0 mb-6 page-title">Salut {me.name}</h1>
       {error ? (
         <div className="flex flex-col items-start gap-3" role="alert">
           <p className="m-0 text-ink-soft">{error}</p>
@@ -48,14 +48,14 @@ export function HomePage() {
       ) : !lists ? (
         <div className="flex flex-col gap-2.5" aria-busy="true" aria-label="Chargement des parties">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-[14px] bg-surface-subtle" />
+            <div key={i} className="h-16 animate-pulse rounded-card bg-surface-subtle" />
           ))}
         </div>
       ) : lists.ongoing.length + lists.finished.length === 0 ? (
-        <div className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-5">
+        <div className="flex flex-col gap-3 rounded-card border border-line bg-surface p-5">
           <p className="m-0 font-display text-xl font-semibold">Aucune partie pour l’instant</p>
           <p className="m-0 text-ink-soft">Choisis un jeu, ajoute les joueurs, et c’est parti.</p>
-          <Link to="/nouvelle" className="self-start font-semibold text-accent-strong">
+          <Link to="/nouvelle" className="self-start font-semibold text-accent-text">
             Nouvelle partie
           </Link>
         </div>

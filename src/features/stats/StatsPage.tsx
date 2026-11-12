@@ -9,7 +9,7 @@ const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`
 
 function Tile({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex flex-col gap-1 rounded-[14px] border border-line bg-surface p-3.5">
+    <div className="flex flex-col gap-1 rounded-card border border-line bg-surface p-3.5">
       <span className="text-[26px] leading-none font-bold tabular-nums">{value}</span>
       <span className="text-[13px] text-ink-soft">{label}</span>
     </div>
@@ -41,7 +41,7 @@ export function StatsPage() {
   return (
     <AppShell>
       <div className="mb-5 flex flex-col">
-        <h1 className="m-0 font-display text-[28px] font-semibold">Mes statistiques</h1>
+        <h1 className="m-0 page-title">Mes statistiques</h1>
         <span className="text-[13px] text-ink-soft">Les parties où tu as joué</span>
       </div>
       {error ? (
@@ -54,11 +54,11 @@ export function StatsPage() {
       ) : !stats ? (
         <div className="grid grid-cols-3 gap-2" aria-busy="true" aria-label="Chargement des statistiques">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-[76px] animate-pulse rounded-[14px] bg-surface-subtle" />
+            <div key={i} className="h-[76px] animate-pulse rounded-card bg-surface-subtle" />
           ))}
         </div>
       ) : stats.parties === 0 ? (
-        <div className="rounded-[18px] border border-line bg-surface p-5">
+        <div className="rounded-card border border-line bg-surface p-5">
           <p className="m-0 font-display text-xl font-semibold">Pas encore de statistiques</p>
           <p className="m-0 mt-2 text-ink-soft">Termine une première partie pour voir tes statistiques.</p>
         </div>
@@ -71,10 +71,10 @@ export function StatsPage() {
           </div>
 
           <section className="flex flex-col gap-2.5" aria-labelledby="stats-games">
-            <h2 id="stats-games" className="m-0 text-xs font-semibold tracking-[0.06em] text-ink-soft uppercase">
+            <h2 id="stats-games" className="m-0 section-label">
               Par jeu
             </h2>
-            <ul className="m-0 list-none overflow-hidden rounded-[14px] border border-line bg-surface p-0">
+            <ul className="m-0 list-none overflow-hidden rounded-card border border-line bg-surface p-0">
               {stats.byGame.map((g) => (
                 <li key={g.gameId} className="flex min-h-[60px] items-center gap-3 border-b border-line px-4 py-2 last:border-b-0">
                   <div className="flex min-w-0 grow flex-col gap-0.5">
@@ -102,7 +102,7 @@ export function StatsPage() {
           </section>
 
           <section className="flex flex-col gap-3" aria-labelledby="stats-wins">
-            <h2 id="stats-wins" className="m-0 text-xs font-semibold tracking-[0.06em] text-ink-soft uppercase">
+            <h2 id="stats-wins" className="m-0 section-label">
               Victoires dans ces parties
             </h2>
             <ul className="m-0 flex list-none flex-col gap-3 p-0">
