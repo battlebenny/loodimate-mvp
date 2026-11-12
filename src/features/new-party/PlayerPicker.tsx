@@ -67,21 +67,21 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
 
       {confirm ? (
         <div className="flex flex-col gap-2 rounded-[18px] border border-line bg-surface p-4" role="group" aria-label="Confirmer le joueur">
-          <p className="m-0 font-semibold">{confirm.name} : ce joueur ?</p>
-          <p className="m-0 text-sm text-ink-soft">Ce prénom est déjà utilisé dans Loodi-mate.</p>
+          <p className="m-0 font-semibold">{confirm.name} joue déjà sur Mate.</p>
+          <p className="m-0 text-sm text-ink-soft">C’est la même personne ?</p>
           <div className="flex gap-2">
             <Button className="grow" onClick={() => add({ name: confirm.name, playerId: confirm.id })}>
               Oui
             </Button>
             <Button variant="secondary" className="grow" onClick={() => askInitial(confirm.name, `Ce n'est pas ${confirm.name}.`)}>
-              Non, une initiale
+              Non, une autre
             </Button>
           </div>
         </div>
       ) : (
         <form className="flex gap-2" onSubmit={submit}>
           <label htmlFor="player-name" className="sr-only">
-            Nom du joueur
+            Prénom du joueur
           </label>
           <input
             id="player-name"
@@ -89,7 +89,7 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
             autoComplete="off"
             enterKeyHint="done"
             maxLength={40}
-            placeholder="Ajouter un joueur"
+            placeholder="Ex. Léa"
             onChange={(e) => setInput(e.target.value)}
             aria-describedby={hint ? 'player-hint' : undefined}
             className="h-[52px] min-w-0 grow rounded-[var(--radius-control)] border-[1.5px] border-line bg-surface px-4 text-base text-ink outline-none focus:border-accent"
@@ -107,7 +107,7 @@ export function PlayerPicker({ players, onChange, known }: { players: PickedPlay
 
       {suggestions.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[13px] text-ink-soft">Déjà venus :</span>
+          <span className="text-[13px] text-ink-soft">Habitués :</span>
           {suggestions.map((n) => (
             <button key={n} type="button" onClick={() => add({ name: n })} className="inline-flex min-h-10 items-center rounded-full border-[1.5px] border-dashed border-ink-soft px-3.5 text-[15px] hover:bg-surface-subtle">
               + {n}

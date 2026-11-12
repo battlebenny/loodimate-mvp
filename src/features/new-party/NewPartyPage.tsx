@@ -41,7 +41,7 @@ export function NewPartyPage() {
       })
       navigate(`/partie/${party.id}/feuille`, { replace: true, state: { party } })
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Une erreur est survenue.')
+      setError(e instanceof Error ? e.message : 'Une erreur est survenue. Réessaie dans un instant.')
       setBusy(false)
     }
   }

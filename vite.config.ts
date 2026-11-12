@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
       manifest: {
         name: 'Loodi-mate',
         short_name: 'Mate',
-        description: 'Garde la trace de vos parties de jeux de société.',
+        description: 'Garde la trace de tes parties de jeux de société.',
         lang: 'fr',
         display: 'standalone',
         start_url: '/',

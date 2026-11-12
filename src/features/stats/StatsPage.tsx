@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AppShell } from '../../components/shell/AppShell'
 import { Button } from '../../components/ui/Button'
-import { useMe } from '../../app/PlayerContext'
 import { api } from '../../lib/api'
 import { track } from '../../lib/track'
 import type { StatsDTO } from '../../../shared/types'
@@ -18,7 +17,6 @@ function Tile({ value, label }: { value: string; label: string }) {
 }
 
 export function StatsPage() {
-  const me = useMe()
   const [stats, setStats] = useState<StatsDTO | null>(null)
   const [error, setError] = useState<string>()
   const tracked = useRef(false)
@@ -27,7 +25,7 @@ export function StatsPage() {
     setError(undefined)
     api<StatsDTO>('GET', 'stats')
       .then(setStats)
-      .catch((e) => setError(e instanceof Error ? e.message : 'Une erreur est survenue.'))
+      .catch((e) => setError(e instanceof Error ? e.message : 'Une erreur est survenue. Réessaie dans un instant.'))
   }, [])
 
   useEffect(() => {
@@ -44,7 +42,7 @@ export function StatsPage() {
     <AppShell>
       <div className="mb-5 flex flex-col">
         <h1 className="m-0 font-display text-[28px] font-semibold">Mes statistiques</h1>
-        <span className="text-[13px] text-ink-soft">Parties où {me.name} a joué</span>
+        <span className="text-[13px] text-ink-soft">Les parties où tu as joué</span>
       </div>
       {error ? (
         <div className="flex flex-col items-start gap-3" role="alert">
@@ -62,7 +60,7 @@ export function StatsPage() {
       ) : stats.parties === 0 ? (
         <div className="rounded-[18px] border border-line bg-surface p-5">
           <p className="m-0 font-display text-xl font-semibold">Pas encore de statistiques</p>
-          <p className="m-0 mt-2 text-ink-soft">Termine une première partie pour voir tes stats.</p>
+          <p className="m-0 mt-2 text-ink-soft">Termine une première partie pour voir tes statistiques.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-6">

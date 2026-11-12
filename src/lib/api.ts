@@ -32,7 +32,7 @@ export async function api<T>(method: string, path: string, body?: unknown, opts:
   const data = await res.json().catch(() => null)
   if (!res.ok) {
     const err = (data as { error?: { code: string; message: string } } | null)?.error
-    throw new ApiError(res.status, err?.code ?? 'unknown', err?.message ?? 'Une erreur est survenue.')
+    throw new ApiError(res.status, err?.code ?? 'unknown', err?.message ?? 'Une erreur est survenue. Réessaie dans un instant.')
   }
   return data as T
 }

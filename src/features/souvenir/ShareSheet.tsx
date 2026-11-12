@@ -35,17 +35,17 @@ export function ShareSheet({ open, onClose, url, gameName, partyId }: { open: bo
   return (
     <Sheet
       open={open}
-      title="Partager à ton groupe"
+      title="Partager avec ta tablée"
       onClose={() => {
         setFeedback('')
         onClose()
       }}
     >
-      <p className="m-0 mb-1.5 text-sm text-ink-soft">Lien privé, sans compte. Les invités voient le souvenir sans pouvoir le modifier.</p>
+      <p className="m-0 mb-1.5 text-sm text-ink-soft">Toute personne qui a le lien voit le souvenir, sans compte et sans pouvoir le modifier.</p>
       {canShare && (
         <button type="button" className={btn} onClick={native}>
           <ShareIcon />
-          Partager via… (WhatsApp, SMS)
+          Envoyer par WhatsApp, SMS…
         </button>
       )}
       <button type="button" className={btn} onClick={copy}>

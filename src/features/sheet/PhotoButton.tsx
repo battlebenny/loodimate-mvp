@@ -35,7 +35,7 @@ export function usePhotoUpload(partyId: string, onDone: (p: PartyDTO) => void) {
           const photo = await compressImage(file)
           onDone(await api<PartyDTO>('POST', `parties/${partyId}/photos`, photo))
         } catch (err) {
-          setError(err instanceof Error && 'code' in err ? err.message : "La photo n'a pas pu être ajoutée.")
+          setError(err instanceof Error && 'code' in err ? err.message : 'Impossible d’ajouter la photo. Réessaie dans un instant.')
         } finally {
           setBusy(false)
         }

@@ -67,7 +67,7 @@ export function GamePicker({ value, onChange }: { value: PickedGame | null; onCh
           <button
             key={g.bggId}
             type="button"
-            onClick={() => onChange({ bggId: g.bggId, name: g.name, image: g.image, thumb: g.thumb, meta: g.year ? `BGG · ${g.year}` : 'BGG' })}
+            onClick={() => onChange({ bggId: g.bggId, name: g.name, image: g.image, thumb: g.thumb, meta: g.year ? String(g.year) : 'BoardGameGeek' })}
             className="flex min-h-12 w-full items-center gap-3 border-t border-line px-4 py-1.5 text-left hover:bg-surface-subtle"
           >
             <GameThumb src={g.thumb} size={32} />
@@ -78,11 +78,11 @@ export function GamePicker({ value, onChange }: { value: PickedGame | null; onCh
         {q.length >= 1 && (
           <button
             type="button"
-            onClick={() => onChange({ name: q, image: null, thumb: null, meta: 'Saisi en texte libre' })}
+            onClick={() => onChange({ name: q, image: null, thumb: null, meta: 'Ajouté à la main' })}
             className="flex min-h-12 w-full items-center justify-between gap-3 border-t border-line px-4 text-left hover:bg-surface-subtle"
           >
-            <span className="font-medium text-accent-strong">Utiliser « {q} » tel quel</span>
-            <span className="text-xs text-ink-soft">texte libre</span>
+            <span className="font-medium text-accent-strong">Utiliser « {q} »</span>
+            <span className="text-xs text-ink-soft">sans fiche</span>
           </button>
         )}
       </div>

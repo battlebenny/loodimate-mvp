@@ -63,7 +63,7 @@ async function loadParty(db: Db, partyId: string): Promise<AirRecord> {
 
 async function loadOwned(db: Db, deviceId: string | null, partyId: string): Promise<{ playerId: string; party: AirRecord }> {
   const [me, party] = await Promise.all([requirePlayer(db, deviceId), loadParty(db, partyId)])
-  if (!ids(party.fields[F.parties.creator]).includes(me.id)) throw new HttpError(403, 'forbidden', 'Seul·e la personne qui a créé la partie peut la modifier.')
+  if (!ids(party.fields[F.parties.creator]).includes(me.id)) throw new HttpError(403, 'forbidden', 'Seule la personne qui a créé la partie peut la modifier.')
   return { playerId: me.id, party }
 }
 
@@ -147,7 +147,7 @@ export async function createParty(db: Db, deviceId: string | null, input: Create
   if (wanted.length === 0 || wanted.some((p) => !p.name)) throw new HttpError(400, 'bad_request', 'Ajoute au moins un joueur.')
   if (wanted.length > MAX_PLAYERS) throw new HttpError(400, 'bad_request', `${MAX_PLAYERS} joueurs maximum.`)
   if (wanted.some((p, i) => wanted.findIndex((q) => sameName(q.name, p.name)) !== i)) {
-    throw new HttpError(400, 'duplicate_name', 'Deux joueurs ont le même nom : ajoute une initiale.')
+    throw new HttpError(400, 'duplicate_name', 'Deux joueurs ont le même prénom : ajoute une initiale.')
   }
 
   const meRec = await requirePlayerRecord(db, deviceId)

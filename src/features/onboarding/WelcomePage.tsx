@@ -24,7 +24,7 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
       onDone(player)
     } catch (e) {
       if (e instanceof ApiError && (e.code === 'claimable' || e.code === 'taken')) setConflict({ code: e.code, name: name.trim() })
-      else setError(e instanceof Error ? e.message : 'Une erreur est survenue.')
+      else setError(e instanceof Error ? e.message : 'Une erreur est survenue. Réessaie dans un instant.')
     } finally {
       setBusy(false)
     }
@@ -38,7 +38,7 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
   function addInitial() {
     setConflict(null)
     setName(`${name.trim()} `)
-    setError('Ajoute une initiale pour te distinguer, par exemple « Thomas B. ».')
+    setError(`Ajoute une initiale pour te distinguer, par exemple « ${name.trim()} B. ».`)
   }
 
   return (
@@ -47,14 +47,14 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
         <BrandLockup scale={1.5} />
 
         <div className="flex flex-col gap-2.5">
-          <h1 className="m-0 font-display text-[30px] leading-tight font-semibold">Garde la trace de vos parties</h1>
-          <p className="m-0 text-base text-ink-soft">Scores, vainqueurs et souvenirs de vos soirées jeux, sans créer de compte.</p>
+          <h1 className="m-0 font-display text-[30px] leading-tight font-semibold">Garde la trace de tes parties</h1>
+          <p className="m-0 text-base text-ink-soft">Scores, vainqueurs et souvenirs de tes soirées jeux, sans créer de compte.</p>
         </div>
 
         {conflict ? (
           <div className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-4" role="alertdialog" aria-labelledby="conflict-title">
             <p id="conflict-title" className="m-0 font-semibold">
-              {conflict.code === 'claimable' ? `Un·e ${conflict.name} joue déjà dans vos parties. C'est toi ?` : `C'est toi sur un autre appareil ?`}
+              {conflict.code === 'claimable' ? `${conflict.name} joue déjà sur Mate. C’est toi ?` : `C'est toi sur un autre appareil ?`}
             </p>
             {conflict.code === 'taken' && <p className="m-0 text-sm text-ink-soft">Par exemple après avoir installé l'app sur ton écran d'accueil.</p>}
             <div className="flex flex-col gap-2">
@@ -75,7 +75,7 @@ export function WelcomePage({ onDone }: { onDone: (p: PlayerDTO) => void }) {
               maxLength={40}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              hint="Il sert à te retrouver dans les parties de ton groupe."
+              hint="Il permet à ta tablée de te retrouver dans ses parties."
               error={error}
             />
           </form>
