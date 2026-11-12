@@ -340,7 +340,8 @@ export async function updateSouvenir(
   const before = toDTO(b, true)
 
   if (typeof p.highlight === 'string') {
-    const text = p.highlight.trim().slice(0, MAX_HIGHLIGHT)
+    // A souvenir always has a highlight: clearing it brings back the automatic one.
+    const text = p.highlight.trim().slice(0, MAX_HIGHLIGHT) || ((await autoHighlight(db, before)) ?? '')
     await db.update(T.parties, [{ id: partyId, fields: { [F.parties.highlight]: text } }])
     b.party.fields[F.parties.highlight] = text
   }

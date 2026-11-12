@@ -13,7 +13,7 @@ export function BottomNav({ hidden }: { hidden?: boolean }) {
   return (
     <nav className={`mate-nav ${hidden ? 'mate-nav--hidden' : ''}`} aria-label="Navigation principale" aria-hidden={hidden || undefined}>
       <div className="mate-nav__surface">
-        {active >= 0 && <span className="mate-nav__indicator" style={{ left: `calc(${active} * 100% / 3)` }} />}
+        {active >= 0 && <span className="mate-nav__indicator" style={{ left: `calc(var(--spacing-xs) + ${active} * 100% / 3)` }} />}
         {TABS.map(({ to, label, Icon }, i) => (
           <NavLink key={to} to={to} end={to === '/'} tabIndex={hidden ? -1 : undefined} className={`mate-nav__tab ${i === active ? 'mate-nav__tab--active' : ''}`}>
             <Icon />

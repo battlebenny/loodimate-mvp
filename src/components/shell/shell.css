@@ -76,12 +76,14 @@
 }
 .mate-nav__tab:hover { color: var(--color-text-light); }
 .mate-nav__tab:active { transform: scale(.9); }
-.mate-nav__tab--active, .mate-nav__tab--active:hover { color: var(--color-module-mate-text); }
+/* Active state wins over the dark-mode tab colors below (same specificity, declared later). */
+.mate-nav__tab.mate-nav__tab--active, :where(.dark) .mate-nav__tab.mate-nav__tab--active { color: var(--color-module-mate-text); }
 .mate-nav__indicator {
   position: absolute;
   top: var(--spacing-xs);
   bottom: var(--spacing-xs);
-  width: calc(100% / 3);
+  /* Same geometry as @loodi/ui's indicator: inset by --spacing-xs on every side, so the pill stays concentric with the bar. */
+  width: calc(100% / 3 - 2 * var(--spacing-xs));
   border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--color-text-light) 5%, transparent);
   pointer-events: none;

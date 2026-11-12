@@ -1,8 +1,8 @@
-import { ChevronLeft } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { AppShell } from '../../components/shell/AppShell'
+import { MiniHeader } from '../../components/shell/MiniHeader'
 import { api } from '../../lib/api'
 import { track } from '../../lib/track'
 import { usePhotoUpload } from '../sheet/PhotoButton'
@@ -54,21 +54,18 @@ export function SouvenirPage() {
       </AppShell>
     )
   }
-  if (!party) return <div className="h-[340px] animate-pulse bg-surface-subtle" />
+  if (!party) return <div className="mx-auto mt-[calc(52px+var(--safe-area-inset-top))] aspect-[3/2] max-w-[560px] animate-pulse bg-surface-subtle" />
   if (party.status === 'en cours') return <Navigate to={`/partie/${id}/feuille`} replace state={{ party }} />
 
   const shareUrl = `${window.location.origin}/s/${party.shareToken}`
   return (
     <>
+      <MiniHeader onBack={() => navigate('/')} />
       {photos.element}
+      <div className="h-[calc(52px+var(--safe-area-inset-top))]" aria-hidden="true" />
       <SouvenirView
         party={party}
         mode="owner"
-        topLeft={
-          <button type="button" onClick={() => navigate('/')} aria-label="Retour à l’accueil" className="loodi-mini-header__icon-button text-ink">
-            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
-          </button>
-        }
         onEdit={() => setSheet('edit')}
         onEditHighlight={() => setSheet('highlight')}
         onAddPhoto={photos.pick}
@@ -92,7 +89,7 @@ export function SouvenirPage() {
       <div className="h-24" />
       <EditResultSheet party={party} open={sheet === 'edit'} onClose={() => setSheet(null)} onSave={(p) => patch(p)} />
       <HighlightSheet open={sheet === 'highlight'} value={party.highlight} onClose={() => setSheet(null)} onSave={(text) => patch({ highlight: text })} />
-      <ShareSheet open={sheet === 'share'} onClose={() => setSheet(null)} url={shareUrl} gameName={party.game.name} partyId={id} />
+      <ShareSheet open={sheet === 'share'} onClose={() => setSheet(null)} url={shareUrl} previewPath={`/s/${party.shareToken}?apercu`} gameName={party.game.name} partyId={id} />
     </>
   )
 }

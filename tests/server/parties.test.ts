@@ -194,10 +194,12 @@ describe('updateSouvenir', () => {
     expect(out.highlight).toBe('Léa a tout raflé')
   })
 
-  it('caps the highlight at 280 characters and clears it when empty', async () => {
+  it('caps the highlight at 280 characters and restores the automatic one when cleared', async () => {
     const p = await finished()
+    const auto = p.highlight
+    expect(auto).toBeTruthy()
     expect((await updateSouvenir(db, 'dev-me', p.id, { highlight: 'x'.repeat(400) })).highlight).toHaveLength(280)
-    expect((await updateSouvenir(db, 'dev-me', p.id, { highlight: '   ' })).highlight).toBeNull()
+    expect((await updateSouvenir(db, 'dev-me', p.id, { highlight: '   ' })).highlight).toBe(auto)
   })
 
   it('forbids another device', async () => {

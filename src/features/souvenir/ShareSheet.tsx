@@ -1,4 +1,6 @@
+import { Eye } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Sheet } from '../../components/ui/Sheet'
 import { track } from '../../lib/track'
 
@@ -8,7 +10,7 @@ const ShareIcon = () => (
   </svg>
 )
 
-export function ShareSheet({ open, onClose, url, gameName, partyId }: { open: boolean; onClose: () => void; url: string; gameName: string; partyId: string }) {
+export function ShareSheet({ open, onClose, url, previewPath, gameName, partyId }: { open: boolean; onClose: () => void; url: string; previewPath: string; gameName: string; partyId: string }) {
   const [feedback, setFeedback] = useState('')
   const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
   const done = (msg: string) => {
@@ -55,6 +57,11 @@ export function ShareSheet({ open, onClose, url, gameName, partyId }: { open: bo
         </svg>
         Copier le lien
       </button>
+      {/* Preview of the guest view; ?apercu keeps it out of the souvenir_ouvert / cta_clic measures. */}
+      <Link to={previewPath} className="inline-flex min-h-11 items-center gap-2 self-start text-sm font-semibold text-accent-text">
+        <Eye size={18} strokeWidth={2} aria-hidden="true" />
+        Voir ce que reçoit ta tablée
+      </Link>
       <p className="m-0 min-h-5 text-sm font-semibold text-success-text" aria-live="polite">
         {feedback}
       </p>
