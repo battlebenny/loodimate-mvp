@@ -13,7 +13,7 @@ describe('winnerTitle', () => {
     expect(winnerTitle(party('scores par manche', [['Benny', 41, false], ['Léa', 47, true]]))).toEqual({ title: 'Léa gagne', subtitle: '47 points, 6 de plus que Benny' })
   })
   it('elides que', () => {
-    expect(winnerTitle(party('scores par manche', [['Inès', 41, false], ['Léa', 47, true]])).subtitle).toBe("47 points, 6 de plus qu'Inès")
+    expect(winnerTitle(party('scores par manche', [['Inès', 41, false], ['Léa', 47, true]])).subtitle).toBe("47 points, 6 de plus qu’Inès")
   })
   it('tie', () => {
     expect(winnerTitle(party('scores par manche', [['Léa', 30, true], ['Max', 30, true]]))).toEqual({ title: 'Léa et Max ex aequo', subtitle: 'Égalité au sommet' })

@@ -52,11 +52,11 @@ export class AirtableClient {
       }
       if (!res.ok) {
         console.error('[airtable]', res.status, await res.text().catch(() => ''))
-        throw new HttpError(502, 'storage', "Impossible d'enregistrer pour le moment, réessaie dans un instant.")
+        throw new HttpError(502, 'storage', 'Impossible d’enregistrer pour le moment. Réessaie dans un instant.')
       }
       return (await res.json()) as T
     }
-    throw new HttpError(503, 'busy', 'Le service est très demandé, réessaie dans un instant.')
+    throw new HttpError(503, 'busy', 'Mate est très sollicité. Réessaie dans un instant.')
   }
 
   private tableUrl(table: string): string {

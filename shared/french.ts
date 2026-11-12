@@ -1,11 +1,11 @@
 const VOWEL = /^[aeiouyàâäéèêëîïôöùûüÿæœ]/i
 
 export function withDe(name: string): string {
-  return VOWEL.test(name) ? `d'${name}` : `de ${name}`
+  return VOWEL.test(name) ? `d’${name}` : `de ${name}`
 }
 
 export function withQue(name: string): string {
-  return VOWEL.test(name) ? `qu'${name}` : `que ${name}`
+  return VOWEL.test(name) ? `qu’${name}` : `que ${name}`
 }
 
 export function points(n: number): string {

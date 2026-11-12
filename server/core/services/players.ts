@@ -18,7 +18,7 @@ export async function findPlayerByDevice(db: Db, deviceId: string): Promise<Play
 /** The device's player record (with its links); fails with 401 when the device is not onboarded. */
 export async function requirePlayerRecord(db: Db, deviceId: string | null): Promise<AirRecord> {
   const recs = deviceId ? await db.list(T.players, { filterByFormula: byDeviceFormula(F.players.device, deviceId), maxRecords: 1 }) : []
-  if (!recs[0]) throw new HttpError(401, 'not_onboarded', 'Présente-toi d’abord pour utiliser Loodi-mate.')
+  if (!recs[0]) throw new HttpError(401, 'not_onboarded', 'Présente-toi d’abord pour utiliser Mate.')
   return recs[0]
 }
 
@@ -46,7 +46,7 @@ export async function lookupName(db: Db, name: string): Promise<{ status: 'free'
 export async function onboard(db: Db, deviceId: string, firstName: string, mode: 'new' | 'claim' | 'link'): Promise<PlayerDTO> {
   const name = normalizeName(firstName)
   if (!name || !deviceId) throw new HttpError(400, 'bad_request', 'Indique ton prénom.')
-  if (name.length > 40) throw new HttpError(400, 'bad_request', 'Ce prénom est trop long.')
+  if (name.length > 40) throw new HttpError(400, 'bad_request', 'Ce prénom est trop long (40 caractères maximum).')
   const today = new Date().toISOString().slice(0, 10)
   const existing = await findPlayerByName(db, name)
   let player: PlayerDTO

@@ -133,7 +133,7 @@ describe('finishParty', () => {
   it('uses the winners sent for a winner-only game', async () => {
     const p = await newAzul(['Benny', 'Inès', 'Max'])
     const out = await finishParty(db, 'dev-me', p.id, sheet(p, { Benny: [null], Inès: [null], Max: [null] }, ['Inès', 'Max'], 'vainqueur seulement'))
-    expect(out.highlight).toBe("Belle victoire d'Inès et Max")
+    expect(out.highlight).toBe("Belle victoire d’Inès et Max")
   })
 
   it('detects a personal record from previous finished games of the winner', async () => {
@@ -142,7 +142,7 @@ describe('finishParty', () => {
     db.find(T.parties, first.id).fields[F.parties.finishedAt] = new Date(Date.now() - 86400000).toISOString()
     const second = await newAzul(['Benny', 'Léa'])
     const out = await finishParty(db, 'dev-me', second.id, sheet(second, { Benny: [58], Léa: [40] }))
-    expect(out.highlight).toBe('Nouveau record de Benny sur Azul : 58 points')
+    expect(out.highlight).toBe('Nouveau record de Benny sur Azul : 58 points')
   })
 
   it('ignores a duplicate of the same game recorded minutes ago when looking for a record', async () => {
@@ -153,7 +153,7 @@ describe('finishParty', () => {
     await finishParty(db, 'dev-me', dup.id, sheet(dup, { Benny: [58], Léa: [40] }))
     const second = await newAzul(['Benny', 'Léa'])
     const out = await finishParty(db, 'dev-me', second.id, sheet(second, { Benny: [58], Léa: [40] }))
-    expect(out.highlight).toBe('Nouveau record de Benny sur Azul : 58 points')
+    expect(out.highlight).toBe('Nouveau record de Benny sur Azul : 58 points')
   })
 
   it('finishes an empty party without winner nor highlight', async () => {
@@ -177,6 +177,14 @@ describe('updateSouvenir', () => {
     expect(out.highlight).toBe('Victoire de Benny avec 50 points, 3 de plus que Léa')
     expect(out.finishedAt).toBe(p.finishedAt)
     expect(out.players.find((x) => x.name === 'Benny')!.total).toBe(50)
+  })
+
+  it('still regenerates a highlight stored before the typography pass', async () => {
+    const p0 = await newAzul(['Benny', 'Inès'])
+    const p = await finishParty(db, 'dev-me', p0.id, sheet(p0, { Benny: [41], Inès: [47] }))
+    await updateSouvenir(db, 'dev-me', p.id, { highlight: "Victoire d'Inès avec 47 points, 6 de plus que Benny" })
+    const out = await updateSouvenir(db, 'dev-me', p.id, { scores: { [pid(p, 'Benny')]: [50] }, winners: [pid(p, 'Benny')] })
+    expect(out.highlight).toBe('Victoire de Benny avec 50 points, 3 de plus qu’Inès')
   })
 
   it('keeps a hand-written highlight after a correction', async () => {

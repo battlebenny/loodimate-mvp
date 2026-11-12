@@ -18,9 +18,9 @@ export function ShareSheet({ open, onClose, url, gameName, partyId }: { open: bo
   async function native() {
     try {
       await navigator.share({ title: `${gameName} · souvenir Loodi-mate`, text: `Le souvenir de notre partie de ${gameName}`, url })
-      done('Partagé !')
+      done('Partagé !')
     } catch (e) {
-      if (!(e instanceof DOMException && e.name === 'AbortError')) setFeedback("Le partage n'a pas fonctionné, copie plutôt le lien.")
+      if (!(e instanceof DOMException && e.name === 'AbortError')) setFeedback("Le partage n’a pas fonctionné, copie plutôt le lien.")
     }
   }
   async function copy() {
@@ -28,24 +28,24 @@ export function ShareSheet({ open, onClose, url, gameName, partyId }: { open: bo
       await navigator.clipboard.writeText(url)
       done('Lien copié')
     } catch {
-      setFeedback(`Copie impossible. Le lien : ${url}`)
+      setFeedback(`Copie impossible. Le lien : ${url}`)
     }
   }
   const btn = 'flex min-h-14 w-full items-center gap-3 rounded-xl border border-line bg-surface px-4 text-left text-base font-medium hover:bg-surface-subtle'
   return (
     <Sheet
       open={open}
-      title="Partager à ton groupe"
+      title="Partager avec ta tablée"
       onClose={() => {
         setFeedback('')
         onClose()
       }}
     >
-      <p className="m-0 mb-1.5 text-sm text-ink-soft">Lien privé, sans compte. Les invités voient le souvenir sans pouvoir le modifier.</p>
+      <p className="m-0 mb-1.5 text-sm text-ink-soft">Toute personne qui a le lien voit le souvenir, sans compte et sans pouvoir le modifier.</p>
       {canShare && (
         <button type="button" className={btn} onClick={native}>
           <ShareIcon />
-          Partager via… (WhatsApp, SMS)
+          Envoyer par WhatsApp, SMS…
         </button>
       )}
       <button type="button" className={btn} onClick={copy}>

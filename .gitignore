@@ -16,3 +16,7 @@ dist/
 .wireframes/
 .superpowers/
 .vite/
+
+# Other AI tools config (re-enable if needed)
+.codex/
+.cursor/

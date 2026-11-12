@@ -41,7 +41,7 @@ export function HighlightSheet({ open, value, onClose, onSave }: { open: boolean
             await onSave(text)
             onClose()
           } catch (e) {
-            setError(e instanceof Error ? e.message : "Le fait marquant n'a pas pu être enregistré.")
+            setError(e instanceof Error ? e.message : 'Impossible d’enregistrer le fait marquant. Réessaie dans un instant.')
           } finally {
             setBusy(false)
           }

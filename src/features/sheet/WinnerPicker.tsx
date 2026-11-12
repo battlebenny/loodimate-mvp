@@ -2,7 +2,7 @@ export function WinnerPicker({ players, winners, onChange }: { players: { id: st
   return (
     <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
       <legend className="mb-2 p-0 text-[15px] font-semibold">
-        Qui a gagné ? <span className="font-normal text-ink-soft">Plusieurs si égalité.</span>
+        Qui a gagné ? <span className="font-normal text-ink-soft">Coche plusieurs joueurs en cas d’égalité.</span>
       </legend>
       {players.map((p) => {
         const on = winners.includes(p.id)

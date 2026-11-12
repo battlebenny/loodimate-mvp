@@ -53,7 +53,7 @@ export async function handle(path: string, request: Request, env: Env): Promise<
     } catch (error) {
       if (error instanceof HttpError) return errorResponse(error.status, error.code, error.message)
       console.error('[api] unexpected error', error)
-      return errorResponse(500, 'internal', 'Une erreur est survenue, réessaie dans un instant.')
+      return errorResponse(500, 'internal', 'Une erreur est survenue. Réessaie dans un instant.')
     }
   }
   return errorResponse(404, 'not_found', 'Introuvable.')

@@ -109,7 +109,7 @@ export function SheetPage() {
       navigate(`/partie/${id}`, { replace: true, state: { party: done } })
     } catch (e) {
       setFinishing(false)
-      setError(e instanceof Error ? e.message : 'Une erreur est survenue.')
+      setError(e instanceof Error ? e.message : 'Une erreur est survenue. Réessaie dans un instant.')
     }
   }
 
