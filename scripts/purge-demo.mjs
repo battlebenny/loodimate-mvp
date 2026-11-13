@@ -36,7 +36,9 @@ async function remove(table, ids, label) {
   for (let i = 0; i < ids.length; i += 10) await call(`${table}?${ids.slice(i, i + 10).map((id) => `records[]=${id}`).join('&')}`, { method: 'DELETE' })
 }
 
-const events = await list(T.events, `FIND('${manifest.eventIdPrefix}',{${F.eventId}})=1`)
+// Seeded events share a prefix; events of parties added later through the app are listed by id.
+const eventFormula = [`FIND('${manifest.eventIdPrefix}',{${F.eventId}})=1`, ...(manifest.eventIds ?? []).map((id) => `{${F.eventId}}='${id}'`)]
+const events = await list(T.events, `OR(${eventFormula.join(',')})`)
 const parties = await list(T.parties, byIds(manifest.parties))
 const participations = parties.flatMap((p) => p.fields[F.partyParticipations] ?? [])
 await remove(T.events, events.map((r) => r.id), 'demo events')

@@ -10,7 +10,7 @@ export type RouteContext = {
 }
 
 export type Route = {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH'
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   pattern: string
   // Returns a JSON-serialisable value (200), a Response, or undefined (204).
   run: (ctx: RouteContext) => Promise<unknown>

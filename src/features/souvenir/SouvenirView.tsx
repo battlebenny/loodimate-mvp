@@ -1,4 +1,4 @@
-import { ImagePlus } from 'lucide-react'
+import { ImagePlus, Trash2 } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { formatLongDate, winnerTitle } from '../../lib/format'
 import { PhotoViewer } from './PhotoViewer'
@@ -21,6 +21,8 @@ type Props = {
   onEdit?: () => void
   onEditHighlight?: () => void
   onAddPhoto?: () => void
+  /** Owner only: asks to delete the photo shown in the slideshow. */
+  onRemovePhoto?: (photo: PartyDTO['photos'][number]) => void
   photoBusy?: boolean
   banner?: ReactNode
   /** Full-width strip laid over the bottom of the hero (e.g. the owner's preview notice). */
@@ -33,7 +35,7 @@ type Props = {
  * Laid out like Loodi-collec's game detail (header above, edge-to-edge 3:2 hero, overlay icons),
  * so the page flows under any host header, including Loodi-one's shell.
  */
-export function SouvenirView({ party, mode, onEdit, onEditHighlight, onAddPhoto, photoBusy, banner, heroOverlay, footer }: Props) {
+export function SouvenirView({ party, mode, onEdit, onEditHighlight, onAddPhoto, onRemovePhoto, photoBusy, banner, heroOverlay, footer }: Props) {
   const [cur, setCur] = useState(0)
   const [viewer, setViewer] = useState(false)
   const owner = mode === 'owner'
@@ -78,6 +80,19 @@ export function SouvenirView({ party, mode, onEdit, onEditHighlight, onAddPhoto,
               className="relative flex size-9 items-center justify-center rounded-xl bg-black/40 text-white backdrop-blur-sm after:absolute after:-inset-1 active:bg-black/50"
             >
               {photoBusy ? <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <ImagePlus size={16} strokeWidth={2.5} aria-hidden="true" />}
+            </button>
+          </div>
+        )}
+        {owner && current && onRemovePhoto && (
+          <div className="absolute right-0 bottom-0 z-10 p-4">
+            {/* Same overlay icon button as "add a photo", at the bottom right of the slideshow. */}
+            <button
+              type="button"
+              onClick={() => onRemovePhoto(current)}
+              aria-label={`Supprimer la photo ${cur + 1}`}
+              className="relative flex size-9 items-center justify-center rounded-xl bg-black/40 text-white backdrop-blur-sm after:absolute after:-inset-1 active:bg-black/50"
+            >
+              <Trash2 size={16} strokeWidth={2.5} aria-hidden="true" />
             </button>
           </div>
         )}

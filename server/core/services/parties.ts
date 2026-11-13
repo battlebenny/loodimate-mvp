@@ -41,7 +41,7 @@ function cleanScores(input: unknown, rounds: number): Scores {
   })
 }
 
-type Attachment = { url: string; thumbnails?: { large?: { url: string }; small?: { url: string } } }
+type Attachment = { id?: string; url: string; thumbnails?: { large?: { url: string }; small?: { url: string } } }
 
 // ---------- loading ----------
 
@@ -96,7 +96,7 @@ function toDTO(b: Bundle, owner: boolean): PartyDTO {
       }
     }),
     highlight: str(f[F.parties.highlight]) || null,
-    photos: ((f[F.parties.photos] as Attachment[] | undefined) ?? []).map((a) => ({ url: a.url, thumbUrl: a.thumbnails?.large?.url ?? a.url })),
+    photos: ((f[F.parties.photos] as Attachment[] | undefined) ?? []).map((a) => ({ id: a.id ?? a.url, url: a.url, thumbUrl: a.thumbnails?.large?.url ?? a.url })),
     canEdit: owner,
   }
   if (owner) dto.shareToken = str(f[F.parties.shareToken])
@@ -377,6 +377,18 @@ export async function addPhoto(db: Db, deviceId: string | null, partyId: string,
   const filename = (file.filename || 'photo.jpg').replace(/[^\w.-]/g, '_').slice(0, 60)
   await db.uploadAttachment(partyId, F.parties.photos, { base64: file.base64, contentType: file.contentType, filename })
   return toDTO(await loadBundle(db, await loadParty(db, partyId)), true)
+}
+
+/** Removes one photo (by attachment id): the owner can replace it or refine the souvenir later. */
+export async function removePhoto(db: Db, deviceId: string | null, partyId: string, photoId: string): Promise<PartyDTO> {
+  const { party } = await loadOwned(db, deviceId, partyId)
+  const photos = (party.fields[F.parties.photos] as Attachment[] | undefined) ?? []
+  const kept = photos.filter((a) => a.id !== photoId)
+  if (kept.length === photos.length) throw new HttpError(404, 'not_found', 'Cette photo n’existe plus.')
+  // Airtable keeps the attachments listed by id and drops the others.
+  await db.update(T.parties, [{ id: partyId, fields: { [F.parties.photos]: kept.map((a) => ({ id: a.id })) } }])
+  party.fields[F.parties.photos] = kept
+  return toDTO(await loadBundle(db, party), true)
 }
 
 // ---------- reading ----------

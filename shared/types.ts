@@ -57,7 +57,8 @@ export type PartyDTO = {
   game: { id: string; name: string; image: string | null }
   players: PartyPlayerDTO[]
   highlight: string | null
-  photos: { url: string; thumbUrl: string }[]
+  /** id: Airtable attachment id, used to delete a photo. */
+  photos: { id: string; url: string; thumbUrl: string }[]
   shareToken?: string
   canEdit: boolean
 }
