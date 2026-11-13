@@ -77,7 +77,7 @@ export function SouvenirView({ party, mode, onEdit, onEditHighlight, onAddPhoto,
               onClick={onAddPhoto}
               disabled={photoBusy}
               aria-label="Ajouter une photo"
-              className="relative flex size-9 items-center justify-center rounded-xl bg-black/40 text-white backdrop-blur-sm after:absolute after:-inset-1 active:bg-black/50"
+              className="relative flex size-9 items-center justify-center rounded-xl bg-black/40 text-white backdrop-blur-sm transition-colors after:absolute after:-inset-1 hover:bg-black/50 active:bg-black/50"
             >
               {photoBusy ? <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" /> : <ImagePlus size={16} strokeWidth={2.5} aria-hidden="true" />}
             </button>
@@ -85,12 +85,12 @@ export function SouvenirView({ party, mode, onEdit, onEditHighlight, onAddPhoto,
         )}
         {owner && current && onRemovePhoto && (
           <div className="absolute right-0 bottom-0 z-10 p-4">
-            {/* Same overlay icon button as "add a photo", at the bottom right of the slideshow. */}
+            {/* Same frosted overlay as "add a photo" (translucent fill + blur), tinted with the danger color since it deletes. */}
             <button
               type="button"
               onClick={() => onRemovePhoto(current)}
               aria-label={`Supprimer la photo ${cur + 1}`}
-              className="relative flex size-9 items-center justify-center rounded-xl bg-black/40 text-white backdrop-blur-sm after:absolute after:-inset-1 active:bg-black/50"
+              className="relative flex size-9 items-center justify-center rounded-xl bg-danger/50 text-white backdrop-blur-sm transition-colors after:absolute after:-inset-1 hover:bg-danger/65 active:bg-danger/75"
             >
               <Trash2 size={16} strokeWidth={2.5} aria-hidden="true" />
             </button>

@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from '../../components/shell/AppShell'
@@ -136,14 +136,14 @@ export function SheetPage() {
               {party.photos.map((ph, i) => (
                 <li key={ph.id} className="relative">
                   <img src={ph.thumbUrl} alt={`Photo ${i + 1}`} className="size-12 rounded-control object-cover" />
-                  {/* Delete badge, top right like the photo count badge; ::after widens the touch target. */}
+                  {/* Delete badge (destructive: danger color, trash icon as on the souvenir); ::after widens the touch target. */}
                   <button
                     type="button"
                     onClick={() => removal.ask(ph)}
                     aria-label={`Supprimer la photo ${i + 1}`}
-                    className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-ink text-bg ring-2 ring-bg after:absolute after:-inset-2.5"
+                    className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-danger/80 text-white ring-2 ring-bg backdrop-blur-sm transition-colors after:absolute after:-inset-2 hover:bg-danger active:bg-danger"
                   >
-                    <X size={12} strokeWidth={3} aria-hidden="true" />
+                    <Trash2 size={13} strokeWidth={2.5} aria-hidden="true" />
                   </button>
                 </li>
               ))}
