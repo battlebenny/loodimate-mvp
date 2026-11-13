@@ -408,10 +408,12 @@ export async function listParties(db: Db, deviceId: string | null, status?: Part
     const own = parts.filter((x) => ids(p.fields[F.parties.participations]).includes(x.id))
     const photos = (p.fields[F.parties.photos] as Attachment[] | undefined) ?? []
     const game = gameOf.get(ids(p.fields[F.parties.game])[0] ?? '')
+    const finished = p.fields[F.parties.status] === 'terminée'
+    const template = (p.fields[F.parties.template] as Template | undefined) ?? 'scores par manche'
     return {
       id: p.id,
       status: (p.fields[F.parties.status] as PartyStatus | undefined) ?? 'en cours',
-      template: (p.fields[F.parties.template] as Template | undefined) ?? 'scores par manche',
+      template,
       rounds: typeof p.fields[F.parties.rounds] === 'number' ? (p.fields[F.parties.rounds] as number) : 1,
       createdAt: str(p.fields[F.parties.createdAt]) || p.createdTime,
       finishedAt: str(p.fields[F.parties.finishedAt]) || null,
@@ -420,6 +422,17 @@ export async function listParties(db: Db, deviceId: string | null, status?: Part
       winnerNames: own.filter((x) => x.fields[F.participations.winner] === true).map((x) => nameOf.get(ids(x.fields[F.participations.player])[0] ?? '') ?? ''),
       photoCount: photos.length,
       firstPhotoThumb: photos[0] ? (photos[0].thumbnails?.large?.url ?? photos[0].url) : null,
+      // Already loaded above (party and participation records): no extra Airtable request.
+      highlight: finished ? str(p.fields[F.parties.highlight]) || null : null,
+      ranking:
+        finished && template === 'scores par manche'
+          ? own
+              .flatMap((x) => {
+                const total = x.fields[F.participations.total]
+                return typeof total === 'number' ? [{ name: nameOf.get(ids(x.fields[F.participations.player])[0] ?? '') ?? '', total }] : []
+              })
+              .sort((a, b) => b.total - a.total)
+          : [],
     }
   })
   const key = (x: PartySummaryDTO) => Date.parse(x.finishedAt ?? x.createdAt)

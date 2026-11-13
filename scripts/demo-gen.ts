@@ -49,7 +49,7 @@ const defs: Def[] = [
   { key: 'p11', game: 'azul', creator: 'max', day: '2026-10-27', start: '20:47', minutes: 44, secs: 49, rows: [['max', [61]], ['benny', [73]], ['ines', [65]], ['lea', [58]]] },
   { key: 'p12', game: 'cluedo', creator: 'benny', day: '2026-10-30', start: '20:30', minutes: 45, secs: 27, shared: 1, rows: [['benny', null], ['jade', null], ['noe', null]], winners: ['benny'] },
   { key: 'p13', game: 'cascadia', creator: 'benny', day: '2026-10-31', start: '16:00', minutes: 40, secs: 42, shared: 2, rows: [['benny', [92]], ['camille', [85]], ['lea', [81]], ['ines', [77]]] },
-  { key: 'p14', game: 'wonders', creator: 'ines', day: '2026-11-01', start: '20:30', minutes: 50, secs: 71, rows: [['ines', [63]], ['benny', [57]], ['max', [53]]] },
+  { key: 'p14', game: 'wonders', creator: 'ines', day: '2026-11-07', start: '20:30', minutes: 50, secs: 71, rows: [['ines', [63]], ['benny', [57]], ['max', [53]]] },
   { key: 'p15', game: 'skull', creator: 'jade', day: '2026-11-03', start: '21:00', minutes: 50, secs: 39, shared: 1, rows: [['jade', [70, -10, 40, 60, 80]], ['benny', [50, 20, -40, 30, 60]], ['thomas', [30, 40, 30, -20, 20]], ['noe', [-10, 30, 20, 50, -30]]] },
   { key: 'p16', game: 'azul', creator: 'camille', day: '2026-11-05', start: '20:45', minutes: 35, secs: 45, shared: 2, rows: [['camille', [66]], ['benny', [59]], ['max', [62]]] },
   { key: 'p17', game: 'cascadia', creator: 'benny', day: '2026-11-07', start: '15:30', minutes: 45, secs: 33, shared: 2, rows: [['benny', [88]], ['ines', [85]], ['camille', [84]]] },

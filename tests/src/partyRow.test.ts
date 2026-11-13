@@ -4,7 +4,7 @@ import type { PartySummaryDTO } from '../../shared/types.js'
 
 const p = (over: Partial<PartySummaryDTO>): PartySummaryDTO => ({
   id: 'r', status: 'en cours', template: 'scores par manche', rounds: 3, createdAt: '2026-11-07T20:10:00Z', finishedAt: null,
-  game: { name: 'Azul', image: null }, playerCount: 4, winnerNames: [], photoCount: 0, firstPhotoThumb: null, ...over,
+  game: { name: 'Azul', image: null }, playerCount: 4, winnerNames: [], photoCount: 0, firstPhotoThumb: null, highlight: null, ranking: [], ...over,
 })
 
 describe('home rows', () => {

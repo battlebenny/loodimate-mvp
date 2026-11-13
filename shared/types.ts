@@ -74,6 +74,10 @@ export type PartySummaryDTO = {
   winnerNames: string[]
   photoCount: number
   firstPhotoThumb: string | null
+  /** Finished parties only (null otherwise): lets Home show the latest souvenir without another call. */
+  highlight: string | null
+  /** Finished "scores par manche" parties: players by total, best first; empty otherwise. */
+  ranking: { name: string; total: number }[]
 }
 
 export type StatsDTO = {
