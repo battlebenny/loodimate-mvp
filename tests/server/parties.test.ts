@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { F, T } from '../../server/core/airtable/schema.js'
 import {
-  addPhoto, createParty, finishParty, getParty, getSharedParty, listParties, saveSheet, updateSouvenir,
+  addPhoto, removePhoto, createParty, finishParty, getParty, getSharedParty, listParties, saveSheet, updateSouvenir,
 } from '../../server/core/services/parties.js'
 import type { PartyDTO, SheetInput } from '../../shared/types.js'
 import { FakeDb } from '../helpers/fakeDb.js'
@@ -219,6 +219,16 @@ describe('photos', () => {
     expect(out.photos).toHaveLength(3)
     expect(out.photos[0]!.thumbUrl).toContain('https://dl/l/')
   })
+  it('removes one photo, keeps the others, and only for the owner', async () => {
+    const p = await newAzul(['Benny'])
+    for (let i = 0; i < 2; i++) await addPhoto(db, 'dev-me', p.id, { ...file, filename: `p${i}.jpg` })
+    const [first, second] = (await getParty(db, 'dev-me', p.id)).photos
+    await expect(removePhoto(db, 'dev-lea', p.id, first!.id)).rejects.toMatchObject({ status: 403 })
+    const out = await removePhoto(db, 'dev-me', p.id, first!.id)
+    expect(out.photos.map((x) => x.id)).toEqual([second!.id])
+    expect((db.find(T.parties, p.id).fields[F.parties.photos] as { id: string }[]).map((a) => a.id)).toEqual([second!.id])
+    await expect(removePhoto(db, 'dev-me', p.id, first!.id)).rejects.toMatchObject({ status: 404 })
+  })
   it('refuses non image content and other devices', async () => {
     const p = await newAzul(['Benny'])
     await expect(addPhoto(db, 'dev-me', p.id, { ...file, contentType: 'text/html' })).rejects.toMatchObject({ status: 400 })
@@ -251,6 +261,9 @@ describe('reading', () => {
     const done = await listParties(db, 'dev-me', 'terminée')
     expect(done).toHaveLength(1)
     expect(done[0]).toMatchObject({ id: b.id, playerCount: 2, winnerNames: ['Inès'], photoCount: 0, game: { name: 'Azul', image: null } })
+    expect(done[0]!.ranking).toEqual([{ name: 'Inès', total: 5 }, { name: 'Benny', total: 3 }])
+    expect(done[0]!.highlight).toBeTruthy()
+    expect(ongoing[0]).toMatchObject({ highlight: null, ranking: [] })
     expect(await listParties(db, 'dev-lea', 'terminée')).toEqual([])
   })
 })

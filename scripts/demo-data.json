@@ -274,10 +274,10 @@
    "game": "recOqrRRWDrfuRogP",
    "creator": "recBwDwYbSNDi6MKp",
    "fields": {
-    "fldtHgYlu2T6TOXSI": "7-wonders-2026-11-01",
+    "fldtHgYlu2T6TOXSI": "7-wonders-2026-11-07",
     "fld1l7j5BZJPZMHGG": "terminée",
-    "fldvCakGk5g9zX3vx": "2026-11-01T19:30:00.000Z",
-    "flddAOHmIJeGxI5Gc": "2026-11-01T20:20:00.000Z",
+    "fldvCakGk5g9zX3vx": "2026-11-07T19:30:00.000Z",
+    "flddAOHmIJeGxI5Gc": "2026-11-07T20:20:00.000Z",
     "fldehUg7djsAAiY9g": "scores par manche",
     "fld3Cm14ZUZjv6MF9": 1,
     "fld1czNj5gTVdtfI5": 71,
@@ -861,7 +861,7 @@
    "party": "@p14",
    "player": "recBwDwYbSNDi6MKp",
    "fields": {
-    "fldv5gNOFn90Xtz5u": "7-wonders-2026-11-01 · Inès",
+    "fldv5gNOFn90Xtz5u": "7-wonders-2026-11-07 · Inès",
     "fldb6Tco43rbJv3qC": "[63]",
     "flddk8mqHcmOuDH20": 63,
     "fldubb4LPMPNqYKzu": true
@@ -871,7 +871,7 @@
    "party": "@p14",
    "player": "rec2rfHvNP12X042F",
    "fields": {
-    "fldv5gNOFn90Xtz5u": "7-wonders-2026-11-01 · Benny",
+    "fldv5gNOFn90Xtz5u": "7-wonders-2026-11-07 · Benny",
     "fldb6Tco43rbJv3qC": "[57]",
     "flddk8mqHcmOuDH20": 57,
     "fldubb4LPMPNqYKzu": false
@@ -881,7 +881,7 @@
    "party": "@p14",
    "player": "@max",
    "fields": {
-    "fldv5gNOFn90Xtz5u": "7-wonders-2026-11-01 · Max",
+    "fldv5gNOFn90Xtz5u": "7-wonders-2026-11-07 · Max",
     "fldb6Tco43rbJv3qC": "[53]",
     "flddk8mqHcmOuDH20": 53,
     "fldubb4LPMPNqYKzu": false
@@ -2059,7 +2059,7 @@
     "fld0QTk20feR8pkla": "dev-b84e0d17",
     "fldaAhR3eM2AQazDR": "partie_creee",
     "fldPy3TH2KX7OEF75": "app",
-    "fld4INdNyFgepFDBr": "2026-11-01T19:30:00.000Z"
+    "fld4INdNyFgepFDBr": "2026-11-07T19:30:00.000Z"
    },
    "party": "@p14",
    "player": "recBwDwYbSNDi6MKp"
@@ -2070,7 +2070,7 @@
     "fld0QTk20feR8pkla": "dev-b84e0d17",
     "fldaAhR3eM2AQazDR": "partie_terminee",
     "fldPy3TH2KX7OEF75": "app",
-    "fld4INdNyFgepFDBr": "2026-11-01T20:20:00.000Z"
+    "fld4INdNyFgepFDBr": "2026-11-07T20:20:00.000Z"
    },
    "party": "@p14",
    "player": "recBwDwYbSNDi6MKp"

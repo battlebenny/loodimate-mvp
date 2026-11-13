@@ -41,7 +41,7 @@ function cleanScores(input: unknown, rounds: number): Scores {
   })
 }
 
-type Attachment = { url: string; thumbnails?: { large?: { url: string }; small?: { url: string } } }
+type Attachment = { id?: string; url: string; thumbnails?: { large?: { url: string }; small?: { url: string } } }
 
 // ---------- loading ----------
 
@@ -96,7 +96,7 @@ function toDTO(b: Bundle, owner: boolean): PartyDTO {
       }
     }),
     highlight: str(f[F.parties.highlight]) || null,
-    photos: ((f[F.parties.photos] as Attachment[] | undefined) ?? []).map((a) => ({ url: a.url, thumbUrl: a.thumbnails?.large?.url ?? a.url })),
+    photos: ((f[F.parties.photos] as Attachment[] | undefined) ?? []).map((a) => ({ id: a.id ?? a.url, url: a.url, thumbUrl: a.thumbnails?.large?.url ?? a.url })),
     canEdit: owner,
   }
   if (owner) dto.shareToken = str(f[F.parties.shareToken])
@@ -379,6 +379,18 @@ export async function addPhoto(db: Db, deviceId: string | null, partyId: string,
   return toDTO(await loadBundle(db, await loadParty(db, partyId)), true)
 }
 
+/** Removes one photo (by attachment id): the owner can replace it or refine the souvenir later. */
+export async function removePhoto(db: Db, deviceId: string | null, partyId: string, photoId: string): Promise<PartyDTO> {
+  const { party } = await loadOwned(db, deviceId, partyId)
+  const photos = (party.fields[F.parties.photos] as Attachment[] | undefined) ?? []
+  const kept = photos.filter((a) => a.id !== photoId)
+  if (kept.length === photos.length) throw new HttpError(404, 'not_found', 'Cette photo n’existe plus.')
+  // Airtable keeps the attachments listed by id and drops the others.
+  await db.update(T.parties, [{ id: partyId, fields: { [F.parties.photos]: kept.map((a) => ({ id: a.id })) } }])
+  party.fields[F.parties.photos] = kept
+  return toDTO(await loadBundle(db, party), true)
+}
+
 // ---------- reading ----------
 
 export async function getParty(db: Db, deviceId: string | null, partyId: string): Promise<PartyDTO> {
@@ -408,10 +420,12 @@ export async function listParties(db: Db, deviceId: string | null, status?: Part
     const own = parts.filter((x) => ids(p.fields[F.parties.participations]).includes(x.id))
     const photos = (p.fields[F.parties.photos] as Attachment[] | undefined) ?? []
     const game = gameOf.get(ids(p.fields[F.parties.game])[0] ?? '')
+    const finished = p.fields[F.parties.status] === 'terminée'
+    const template = (p.fields[F.parties.template] as Template | undefined) ?? 'scores par manche'
     return {
       id: p.id,
       status: (p.fields[F.parties.status] as PartyStatus | undefined) ?? 'en cours',
-      template: (p.fields[F.parties.template] as Template | undefined) ?? 'scores par manche',
+      template,
       rounds: typeof p.fields[F.parties.rounds] === 'number' ? (p.fields[F.parties.rounds] as number) : 1,
       createdAt: str(p.fields[F.parties.createdAt]) || p.createdTime,
       finishedAt: str(p.fields[F.parties.finishedAt]) || null,
@@ -420,6 +434,17 @@ export async function listParties(db: Db, deviceId: string | null, status?: Part
       winnerNames: own.filter((x) => x.fields[F.participations.winner] === true).map((x) => nameOf.get(ids(x.fields[F.participations.player])[0] ?? '') ?? ''),
       photoCount: photos.length,
       firstPhotoThumb: photos[0] ? (photos[0].thumbnails?.large?.url ?? photos[0].url) : null,
+      // Already loaded above (party and participation records): no extra Airtable request.
+      highlight: finished ? str(p.fields[F.parties.highlight]) || null : null,
+      ranking:
+        finished && template === 'scores par manche'
+          ? own
+              .flatMap((x) => {
+                const total = x.fields[F.participations.total]
+                return typeof total === 'number' ? [{ name: nameOf.get(ids(x.fields[F.participations.player])[0] ?? '') ?? '', total }] : []
+              })
+              .sort((a, b) => b.total - a.total)
+          : [],
     }
   })
   const key = (x: PartySummaryDTO) => Date.parse(x.finishedAt ?? x.createdAt)

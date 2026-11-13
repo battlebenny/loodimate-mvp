@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button'
 import { useMe } from '../../app/PlayerContext'
 import { api } from '../../lib/api'
 import { PartyRow } from './PartyRow'
+import { HomeHero } from './HomeHero'
 import type { PartySummaryDTO } from '../../../shared/types'
 
 type Lists = { ongoing: PartySummaryDTO[]; finished: PartySummaryDTO[] }
@@ -35,9 +36,12 @@ export function HomePage() {
 
   useEffect(load, [load])
 
+  // The cover already puts forward the latest ongoing party (see HomeHero): the list shows the others.
+  const listedOngoing = lists?.ongoing.slice(1) ?? []
+
   return (
     <AppShell>
-      <h1 className="m-0 mb-6 page-title">Salut {me.name}</h1>
+      {lists && !error ? <HomeHero name={me.name} ongoing={lists.ongoing} finished={lists.finished} /> : <h1 className="m-0 mb-6 page-title">Salut {me.name}</h1>}
       {error ? (
         <div className="flex flex-col items-start gap-3" role="alert">
           <p className="m-0 text-ink-soft">{error}</p>
@@ -61,11 +65,11 @@ export function HomePage() {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          {lists.ongoing.length > 0 && (
+          {listedOngoing.length > 0 && (
             <section className="flex flex-col gap-2.5" aria-labelledby="home-ongoing">
-              <Label id="home-ongoing">{`En cours (${lists.ongoing.length})`}</Label>
+              <Label id="home-ongoing">{`Autres parties en cours (${listedOngoing.length})`}</Label>
               <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
-                {lists.ongoing.map((p) => (
+                {listedOngoing.map((p) => (
                   <PartyRow key={p.id} party={p} />
                 ))}
               </ul>

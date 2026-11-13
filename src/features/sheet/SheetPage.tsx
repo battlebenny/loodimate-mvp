@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from '../../components/shell/AppShell'
@@ -11,6 +12,7 @@ import type { PartyDTO, SheetInput, Template } from '../../../shared/types'
 import { ScoreBlock } from './ScoreBlock'
 import { WinnerPicker } from './WinnerPicker'
 import { PhotoButton, usePhotoUpload } from './PhotoButton'
+import { usePhotoRemoval } from './PhotoRemoval'
 
 function fromParty(p: PartyDTO): SheetInput {
   const base: SheetInput = {
@@ -70,6 +72,7 @@ export function SheetPage() {
   }
 
   const photos = usePhotoUpload(id, setParty)
+  const removal = usePhotoRemoval(id, setParty)
 
   if (party?.status === 'terminée') return <Navigate to={`/partie/${id}`} replace />
   if (error) {
@@ -129,11 +132,22 @@ export function SheetPage() {
             </p>
           )}
           {party.photos.length > 0 && (
-            <div className="flex gap-2" aria-label="Photos de la partie">
+            <ul className="m-0 flex list-none gap-3 p-0 pt-1.5" aria-label="Photos de la partie">
               {party.photos.map((ph, i) => (
-                <img key={ph.url} src={ph.thumbUrl} alt={`Photo ${i + 1}`} className="size-12 rounded-control object-cover" />
+                <li key={ph.id} className="relative">
+                  <img src={ph.thumbUrl} alt={`Photo ${i + 1}`} className="size-12 rounded-control object-cover" />
+                  {/* Delete badge (destructive: danger color, trash icon as on the souvenir); ::after widens the touch target. */}
+                  <button
+                    type="button"
+                    onClick={() => removal.ask(ph)}
+                    aria-label={`Supprimer la photo ${i + 1}`}
+                    className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-danger/80 text-white ring-2 ring-bg backdrop-blur-sm transition-colors after:absolute after:-inset-2 hover:bg-danger active:bg-danger"
+                  >
+                    <Trash2 size={13} strokeWidth={2.5} aria-hidden="true" />
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
           <div className="flex gap-2.5">
             <PhotoButton count={party.photos.length} busy={photos.busy} onPick={photos.pick} />
@@ -145,6 +159,7 @@ export function SheetPage() {
       }
     >
       {photos.element}
+      {removal.element}
       <div className="mb-3 flex flex-col">
         <h1 className="m-0 page-title">{party.game.name}</h1>
         <span className="text-[13px] text-ink-soft">Sauvegarde automatique</span>

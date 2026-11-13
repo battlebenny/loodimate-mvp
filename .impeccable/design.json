@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-13T09:00:00Z",
+  "title": "Design System: Loodi-mate",
+  "extensions": {
+    "colorMeta": {
+      "mate-green": {
+        "role": "primary",
+        "displayName": "Vert Mate",
+        "canonical": "var(--color-module-mate)",
+        "tonalRamp": [
+          "#0F2E1D",
+          "#174530",
+          "#20613D",
+          "#267247",
+          "#2E8B57",
+          "#6DAE89",
+          "#B5D7C3",
+          "#EEF6F2"
+        ]
+      },
+      "mate-green-strong": {
+        "role": "primary",
+        "displayName": "Vert Mate profond",
+        "canonical": "color-mix(in srgb, var(--color-module-mate) 82%, black)"
+      },
+      "mate-green-hover": {
+        "role": "primary",
+        "displayName": "Vert Mate pressé",
+        "canonical": "color-mix(in srgb, var(--color-module-mate) 70%, black)"
+      },
+      "mate-green-text-dark": {
+        "role": "primary",
+        "displayName": "Vert Mate clair",
+        "canonical": "color-mix(in srgb, var(--color-module-mate) 70%, white)"
+      },
+      "mate-green-soft": {
+        "role": "primary",
+        "displayName": "Vert Mate voile",
+        "canonical": "color-mix(in srgb, var(--color-module-mate) 8%, var(--color-theme-surface-base))"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papier",
+        "tonalRamp": [
+          "#1A1A18",
+          "#353533",
+          "#6B6B60",
+          "#A3A39A",
+          "#D9D7D1",
+          "#F2F0EC",
+          "#FAFAF8",
+          "#FFFFFF"
+        ]
+      },
+      "warm-subtle": {
+        "role": "neutral",
+        "displayName": "Warm"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Encre"
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Encre douce"
+      },
+      "glass-navy-dark": {
+        "role": "neutral",
+        "displayName": "Verre marine"
+      },
+      "loodi-orange": {
+        "role": "secondary",
+        "displayName": "Orange Loodi"
+      },
+      "loodi-sun": {
+        "role": "secondary",
+        "displayName": "Soleil Loodi"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titres de page et nom du jeu sur le souvenir."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Titres des feuilles du bas et des états vides."
+      },
+      "quote": {
+        "displayName": "Quote",
+        "purpose": "Le fait marquant, en italique."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texte courant."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Labels de section, capitales espacées."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Libellés de la barre du bas."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-mid",
+        "value": "0 10px 15px -3px rgba(0,0,0,0.05)",
+        "purpose": "Barre de navigation flottante."
+      },
+      {
+        "name": "sheet",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Feuilles du bas."
+      }
+    ],
+    "motion": [
+      {
+        "name": "sheet-in",
+        "value": "250ms cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Entrée des feuilles du bas."
+      },
+      {
+        "name": "nav-indicator",
+        "value": "300ms cubic-bezier(.34, 1.56, .64, 1)",
+        "purpose": "Déplacement de l'indicateur de la barre du bas (charte Loodi)."
+      },
+      {
+        "name": "state",
+        "value": "150ms ease-out",
+        "purpose": "Couleurs et appui des onglets."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "column",
+        "value": "560px"
+      },
+      {
+        "name": "nav",
+        "value": "448px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Action principale d'un écran (Terminer la partie, Partager le souvenir).",
+      "html": "<button class=\"ds-btn-primary\">Partager le souvenir</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border: 0; border-radius: 12px; background: #267247; color: #fff; font: 500 1rem/1 'DM Sans', system-ui, sans-serif; transition: background-color .15s; cursor: pointer; } .ds-btn-primary:hover, .ds-btn-primary:active { background: #20613D; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #FAFAF8, 0 0 0 4px #2E8B57; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Action secondaire, sur surface avec contour warm.",
+      "html": "<button class=\"ds-btn-secondary\">Réessayer</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border: 1px solid #F2F0EC; border-radius: 12px; background: #fff; color: #1A1A18; font: 500 1rem/1 'DM Sans', system-ui, sans-serif; transition: background-color .15s; cursor: pointer; } .ds-btn-secondary:hover { background: #F2F0EC; } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px #FAFAF8, 0 0 0 4px #2E8B57; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Champ de saisie (prénom, recherche de jeu).",
+      "html": "<input class=\"ds-input\" placeholder=\"Ton prénom\" />",
+      "css": ".ds-input { height: 48px; width: 100%; padding: 0 16px; border: 1px solid #F2F0EC; border-radius: 12px; background: #fff; color: #1A1A18; font: 400 1rem 'DM Sans', system-ui, sans-serif; outline: none; } .ds-input::placeholder { color: rgba(107,107,96,.7); } .ds-input:focus { border-color: #2E8B57; }"
+    },
+    {
+      "name": "Player Chip",
+      "kind": "chip",
+      "refersTo": "chip-player",
+      "description": "Joueur ajouté à la partie.",
+      "html": "<span class=\"ds-chip\">Inès <span aria-hidden=\"true\">×</span></span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 1px solid #2E8B57; border-radius: 9999px; background: rgba(46,139,87,.15); color: #267247; font: 500 .9375rem 'DM Sans', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Party Row",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Ligne de partie sur l'accueil ; voile vert quand elle est en cours.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span class=\"ds-row-thumb\"></span><span class=\"ds-row-text\"><strong>Cascadia</strong><small>Sam. 7 nov. · Benny gagne</small></span></a>",
+      "css": ".ds-row { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 16px; border: 1px solid #F2F0EC; border-radius: 18px; background: #fff; color: #1A1A18; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; } .ds-row:hover { background: #F2F0EC; } .ds-row-thumb { width: 40px; height: 40px; border-radius: 12px; background: #F2F0EC; } .ds-row-text { display: flex; flex-direction: column; gap: 2px; } .ds-row-text strong { font-weight: 600; } .ds-row-text small { font-size: 13px; color: #6B6B60; }"
+    },
+    {
+      "name": "Bottom Navigation",
+      "kind": "nav",
+      "description": "Barre flottante en verre, onglet actif en vert Mate.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-ind\"></span><a class=\"ds-nav-tab is-active\">Parties</a><a class=\"ds-nav-tab\">Nouvelle partie</a><a class=\"ds-nav-tab\">Stats</a></nav>",
+      "css": ".ds-nav { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; height: 56px; max-width: 448px; border: 1px solid rgba(0,0,0,.05); border-radius: 9999px; background: rgba(255,255,255,.7); backdrop-filter: blur(8px); box-shadow: 0 10px 15px -3px rgba(0,0,0,.05); font: 500 .6875rem 'DM Sans', system-ui, sans-serif; } .ds-nav-ind { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(100% / 3 - 8px); border-radius: 9999px; background: rgba(53,53,51,.05); } .ds-nav-tab { position: relative; text-align: center; color: rgba(53,53,51,.72); } .ds-nav-tab.is-active { color: #267247; }"
+    },
+    {
+      "name": "Highlight Quote",
+      "kind": "custom",
+      "description": "Le fait marquant du souvenir, en citation.",
+      "html": "<blockquote class=\"ds-quote\">Victoire éclatante de Benny avec 75 points, 5 de plus qu’Inès</blockquote>",
+      "css": ".ds-quote { margin: 0; padding-left: 14px; border-left: 2px solid #2E8B57; color: #1A1A18; font: italic 400 1.125rem/1.375 'Playfair Display', Georgia, serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La boîte à souvenirs",
+    "overview": "Chaque partie enregistrée devient un objet qu'on garde : une image, un résultat, une phrase qui raconte ce qui s'est passé. Le système visuel sert cette promesse en s'effaçant. L'interface est un papier chaud et calme, la typographie éditoriale (Playfair) porte les moments qui comptent (titres, fait marquant), et le vert Mate n'apparaît que là où il y a une action ou une victoire. Pendant la saisie, autour de la table et d'une main, tout est sobre, large et rapide ; après la partie, le souvenir prend la place : image pleine largeur, gagnant, récit.\n\nMate est une app de l'écosystème Loodi et en hérite la charte via @loodi/ui (tokens, MiniHeader, barre du bas). Loodi-collec et Loodi-friends font référence : un écart avec leurs patterns est un défaut, pas un style. Les composants sont chaleureux et posés : fonds chauds, bords doux, sélection lue par une teinte plutôt que par un contour, ombres presque absentes.\n\nMate rejette explicitement le tableur et le dashboard de scores (grilles denses à la BG Stats), l'esthétique gaming néon, et le registre enfantin ou cartoon : la voix Loodi est ludique sans être enfantine.",
+    "keyCharacteristics": [
+      "Papier chaud (#FAFAF8) et surfaces « warm » (#F2F0EC) en clair ; graphite chaud (#1A1A18) en sombre.",
+      "Un seul accent de module, le vert Mate, décliné en tokens locaux pour tenir le contraste AA.",
+      "Playfair pour les titres et le fait marquant, DM Sans pour tout le reste.",
+      "Shell partagé Loodi : MiniHeader de 52 px en haut, barre de navigation flottante en verre en bas.",
+      "Clair et sombre à parité, safe areas natives, prefers-reduced-motion respecté."
+    ],
+    "rules": [
+      {
+        "name": "The One Accent Rule",
+        "body": "Le vert Mate est le seul accent de l'interface. L'orange et le jaune Loodi restent dans le logo.",
+        "section": "colors"
+      },
+      {
+        "name": "The AA Accent Rule",
+        "body": "Le vert Mate pur ne porte jamais de texte. Le texte d'accent utilise accent-text (profond en clair, clair en sombre) ; le texte blanc se pose sur accent-strong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Story Serif Rule",
+        "body": "Playfair ne sert qu'à raconter (titres, nom du jeu, fait marquant). Les boutons, champs, listes et chiffres sont en DM Sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The French Typography Rule",
+        "body": "Apostrophe typographique, espace insécable avant « : », « ? », « ! » et dans les guillemets (règle de PRODUCT.md, appliquée aussi aux libellés visuels).",
+        "section": "typography"
+      },
+      {
+        "name": "The No Overlay Header Rule",
+        "body": "Rien ne passe sous le MiniHeader au repos : le contenu commence à son bord inférieur. Seule exception, la couverture de l'accueil, comme la scène d'accueil de Collec : une image d'ambiance sous un voile couleur fond, opaque en haut, qui garde le header lisible.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Card Rule",
+        "body": "Les cartes n'ont pas d'ombre : un fond surface et un contour warm de 1 px suffisent.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do reprendre d'abord le pattern équivalent de Collec ou Friends avant d'en inventer un.",
+      "Do consommer @loodi/ui tel quel (tokens, MiniHeader) et créer un token local nommé comme le futur token partagé quand il manque.",
+      "Do montrer la sélection par le voile vert (mate-green-soft), avec un contour d'accent discret.",
+      "Do utiliser accent-text pour tout texte vert et accent-strong sous du texte blanc.",
+      "Do garder des cibles tactiles de 44 px minimum, 48 px pour les contrôles principaux."
+    ],
+    "donts": [
+      "Don't construire des grilles de chiffres façon tableur ou dashboard : un score se lit en ligne simple, le souvenir passe avant les statistiques.",
+      "Don't utiliser de néons, de fonds saturés ou d'effets « gaming ».",
+      "Don't glisser vers l'enfantin : pas de couleurs primaires vives, pas d'illustrations cartoon, pas d'emoji.",
+      "Don't utiliser l'orange Loodi comme accent d'interface dans Mate.",
+      "Don't faire passer du contenu sous le MiniHeader au repos (hors couverture voilée de l'accueil) ni ajouter d'éléments fixes en haut de page.",
+      "Don't modifier @loodi/ui depuis Mate."
+    ]
+  }
+}

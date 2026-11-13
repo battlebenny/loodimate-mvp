@@ -9,7 +9,8 @@
  "games": [
   "rec8BmHSlP57M4nci",
   "rectkD8S7uZoax51j",
-  "recT6bXG2xCtCAUXD"
+  "recT6bXG2xCtCAUXD",
+  "recRMjVEqOVDCy0CY"
  ],
  "parties": [
   "rec6ruINamWOmd0Yp",
@@ -31,15 +32,35 @@
   "recqztYIQi0UJi5vW",
   "recueajiMCVpi7cbQ",
   "reccdruQNhDC7EVOl",
-  "recamDLemGzUKItPs"
+  "recamDLemGzUKItPs",
+  "recJpCQ6zowmtrQSj"
  ],
  "eventIdPrefix": "demo-ev-",
+ "eventIds": [
+  "partie_creee-recJpCQ6zowmtrQSj",
+  "partie_terminee-recJpCQ6zowmtrQSj",
+  "baa08972-9a9e-43e1-98e0-2e0442a2c213",
+  "1afbea3d-1a50-4efa-a9fa-10146a707d90",
+  "b549ad99-2d43-4fa4-b1d1-8f3b1b519d38",
+  "59defc71-576c-4e55-b75f-e89d9fe2e67c",
+  "63bf0eee-1855-4ce0-b518-fddde65ba7be",
+  "14c979b2-0c86-4cc6-a002-e501b8d6e788",
+  "a97eb54e-8cca-4e44-810e-93bf59b2a9fe",
+  "a0f0728a-61fe-40d1-a248-72ef20e5b366"
+ ],
  "restore": [
   {
    "table": "tbluswyc5kjhijKxJ",
    "id": "rec2rfHvNP12X042F",
    "fields": {
     "fldFEjODj2Uk3WsqL": "dev-7f3a91c2"
+   }
+  },
+  {
+   "table": "tbluswyc5kjhijKxJ",
+   "id": "recBwDwYbSNDi6MKp",
+   "fields": {
+    "fldFEjODj2Uk3WsqL": "dev-b84e0d17"
    }
   },
   {

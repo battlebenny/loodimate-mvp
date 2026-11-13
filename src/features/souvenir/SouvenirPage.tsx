@@ -6,6 +6,7 @@ import { MiniHeader } from '../../components/shell/MiniHeader'
 import { api } from '../../lib/api'
 import { track } from '../../lib/track'
 import { usePhotoUpload } from '../sheet/PhotoButton'
+import { usePhotoRemoval } from '../sheet/PhotoRemoval'
 import { EditResultSheet } from './EditResultSheet'
 import { HighlightSheet } from './HighlightSheet'
 import { ShareSheet } from './ShareSheet'
@@ -40,6 +41,7 @@ export function SouvenirPage() {
   }, [shownId])
 
   const photos = usePhotoUpload(id, setParty)
+  const removal = usePhotoRemoval(id, setParty)
 
   const patch = async (body: { scores?: Record<string, Scores>; winners?: string[]; highlight?: string }) => {
     setParty(await api<PartyDTO>('PATCH', `parties/${id}/souvenir`, body))
@@ -62,6 +64,7 @@ export function SouvenirPage() {
     <>
       <MiniHeader onBack={() => navigate('/')} />
       {photos.element}
+      {removal.element}
       <div className="h-[calc(52px+var(--safe-area-inset-top))]" aria-hidden="true" />
       <SouvenirView
         party={party}
@@ -69,6 +72,7 @@ export function SouvenirPage() {
         onEdit={() => setSheet('edit')}
         onEditHighlight={() => setSheet('highlight')}
         onAddPhoto={photos.pick}
+        onRemovePhoto={removal.ask}
         photoBusy={photos.busy}
       />
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-bg">

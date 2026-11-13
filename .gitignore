@@ -20,3 +20,7 @@ dist/
 # Other AI tools config (re-enable if needed)
 .codex/
 .cursor/
+
+# Impeccable: only the design sidecar is versioned
+.impeccable/*
+!.impeccable/design.json

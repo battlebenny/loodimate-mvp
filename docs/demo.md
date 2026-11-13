@@ -9,9 +9,11 @@
 ## Contenu du jeu de données (inséré le 2026-11-09)
 
 - Joueurs : Benny, Inès, Léa, Hugo, Thomas (données fictives d'origine de la base) + Max, Camille, Jade (onboardés, appareils `demo-*`) et Noé (non onboardé).
+- Autres joueurs de démo, même URL avec leur ID : `demo-max` et `demo-jade` (dernier souvenir sans scores, Max sans visuel), `demo-camille` (une partie en cours), `demo-ines` (Inès, dernier souvenir 7 Wonders avec scores et fait marquant, utile pour vérifier la couverture de l'accueil).
 - Jeux : Azul, 7 Wonders, The Resistance: Avalon (d'origine, visuel BGG ajouté à Azul et 7 Wonders) + Skull King, Cascadia, Cluedo.
 - 18 parties terminées entre le 6 octobre et le 7 novembre, 2 parties en cours (Skull King de Benny, Cascadia de Camille).
 - Cas démontrables : record battu (Azul 61 puis 73, Skull King 230), égalités (7 Wonders, Cascadia), scores négatifs (Skull King), « vainqueur seulement » (Cluedo, Avalon), **doublon** (Azul du 27/10 enregistré par Benny et par Max : compté une seule fois dans les stats), temps de création 27 à 71 s.
+- Ajout du 2026-11-13 : une partie de **Heat: Pedal to the Metal** à 6 joueurs créée par Benny (Benny, Inès, Léa, Hugo, Thomas, Max), championnat en 3 courses, points selon la place d'arrivée (9, 6, 4, 3, 2, 1) : Benny 24, Inès 19, Max 12, Léa et Hugo 7 (égalité), Thomas 6. Créée via l'API de l'app, elle a émis ses vrais événements `partie_creee` et `partie_terminee` ; la purge la supprime avec eux.
 - 130 événements cohérents (IDs `demo-ev-001` à `130`) : créations, fins, partages, ouvertures de liens par des visiteurs `demo-visitor-*` dont des réouvertures à plus de 48 h (H2), clics CTA, consultations de stats.
 
 Générateur : `scripts/demo-gen.ts` (réutilise les règles de l'app), données générées : `scripts/demo-data.json`.

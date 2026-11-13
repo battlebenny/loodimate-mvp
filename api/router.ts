@@ -19,3 +19,4 @@ export const GET = run
 export const POST = run
 export const PUT = run
 export const PATCH = run
+export const DELETE = run

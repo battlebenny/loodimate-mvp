@@ -1,7 +1,7 @@
 import { HttpError, readJson } from '../http.js'
 import type { Route } from '../router.js'
 import { dbFor } from './db.js'
-import { addPhoto, createParty, finishParty, getParty, getSharedParty, listParties, saveSheet, updateSouvenir } from '../services/parties.js'
+import { addPhoto, removePhoto, createParty, finishParty, getParty, getSharedParty, listParties, saveSheet, updateSouvenir } from '../services/parties.js'
 import type { CreatePartyInput, PartyStatus, Scores, SheetInput } from '../../../shared/types.js'
 
 export const partyRoutes: Route[] = [
@@ -29,5 +29,6 @@ export const partyRoutes: Route[] = [
     pattern: 'parties/:id/photos',
     run: async (ctx) => addPhoto(dbFor(ctx), ctx.deviceId, ctx.params.id!, await readJson<{ base64: string; contentType: string; filename: string }>(ctx.request)),
   },
+  { method: 'DELETE', pattern: 'parties/:id/photos/:photoId', run: async (ctx) => removePhoto(dbFor(ctx), ctx.deviceId, ctx.params.id!, ctx.params.photoId!) },
   { method: 'GET', pattern: 'shared/:token', run: async (ctx) => getSharedParty(dbFor(ctx), ctx.params.token!) },
 ]
