@@ -6,6 +6,8 @@ import { useMe } from '../../app/PlayerContext'
 import { api } from '../../lib/api'
 import { PartyRow } from './PartyRow'
 import { HomeHero } from './HomeHero'
+import { PartyCalendar } from './PartyCalendar'
+import { readHomeView, saveHomeView, ViewToggle, type HomeView } from './ViewToggle'
 import type { PartySummaryDTO } from '../../../shared/types'
 
 type Lists = { ongoing: PartySummaryDTO[]; finished: PartySummaryDTO[] }
@@ -20,6 +22,11 @@ export function HomePage() {
   const me = useMe()
   const [lists, setLists] = useState<Lists | null>(null)
   const [error, setError] = useState<string>()
+  const [view, setView] = useState<HomeView>(readHomeView)
+  const changeView = (v: HomeView) => {
+    setView(v)
+    saveHomeView(v)
+  }
 
   const load = useCallback(() => {
     setError(undefined)
@@ -77,12 +84,19 @@ export function HomePage() {
           )}
           {lists.finished.length > 0 && (
             <section className="flex flex-col gap-2.5" aria-labelledby="home-finished">
-              <Label id="home-finished">Parties terminées</Label>
-              <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
-                {lists.finished.map((p) => (
-                  <PartyRow key={p.id} party={p} />
-                ))}
-              </ul>
+              <div className="flex items-center justify-between gap-3">
+                <Label id="home-finished">Parties terminées</Label>
+                <ViewToggle value={view} onChange={changeView} />
+              </div>
+              {view === 'calendar' ? (
+                <PartyCalendar parties={lists.finished} />
+              ) : (
+                <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
+                  {lists.finished.map((p) => (
+                    <PartyRow key={p.id} party={p} />
+                  ))}
+                </ul>
+              )}
             </section>
           )}
         </div>
