@@ -9,3 +9,5 @@ La documentation produit n'est pas dupliquée dans ce repo. Source de vérité (
 - `Planning de la formation Jedha Product Builder (pbe-ft-04).md` : modules et dates.
 
 Ce dossier `docs/` accueille uniquement la doc technique (choix d'architecture, API internes).
+
+- [`architecture.md`](architecture.md) : architecture (Mermaid) de l’app, de l’API, des données Airtable et des workflows n8n.
