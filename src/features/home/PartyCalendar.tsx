@@ -99,7 +99,7 @@ export function PartyCalendar({ parties }: { parties: PartySummaryDTO[] }) {
                 <>
                   {image && <img src={image} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />}
                   <span className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-transparent" aria-hidden />
-                  <span className="absolute left-1 top-0.5 text-[12px] font-semibold tabular-nums text-white drop-shadow">{day}</span>
+                  <span className="absolute left-1 top-0.5 text-[12px] font-semibold tabular-nums text-white [text-shadow:0_0_3px_rgb(0_0_0/0.9),0_0_8px_rgb(0_0_0/0.6)]">{day}</span>
                   {list.length > 1 && (
                     <span className="absolute bottom-0.5 right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent-strong px-1 font-mono text-[11px] font-semibold leading-none text-white shadow-sm ring-1 ring-white/70">
                       {list.length}
